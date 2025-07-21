@@ -1,62 +1,141 @@
 // src/components/FoundForm.jsx
-import React, { useState } from 'react';
-import Select from 'react-select';
-import { metroLines, getStationsForLine } from './stations'; 
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react"
+import { motion } from "framer-motion"
+import Select from "react-select"
+import { metroLines, getStationsForLine } from "./stations"
+import PhotoUploadSection from "./PhotoUploadSection"
 
-export default function FoundForm() {
-  const [selectedLine, setSelectedLine] = useState(null);
-  const [selectedStation, setSelectedStation] = useState(null);
-  const navigate = useNavigate();
+const placeOptions = [
+  { value: "Concourse", label: "Station Concourse" },
+  { value: "Train", label: "Inside Train" },
+  { value: "EntryExit", label: "Station Entry/Exit" },
+  { value: "Platform", label: "Platform" },
+  { value: "Security", label: "Security Check Area" },
+]
 
-  const filteredStations = selectedLine
-    ? getStationsForLine(selectedLine.value)
-    : [];
+function FoundForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    contact: "",
+    item: "",
+    line: null,
+    station: null,
+    place: null,
+  })
 
-  const lineOptions = metroLines.map(line => ({
-    label: line.label,
-    value: line.value,
-    description: line.description
-  }));
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleLineChange = (selectedLine) => {
+    setFormData((prev) => ({
+      ...prev,
+      line: selectedLine,
+      station: null,
+    }))
+  }
+
+  const handleStationChange = (selectedStation) => {
+    setFormData((prev) => ({
+      ...prev,
+      station: selectedStation,
+    }))
+  }
+
+  const handlePlaceChange = (selectedPlace) => {
+    setFormData((prev) => ({
+      ...prev,
+      place: selectedPlace,
+    }))
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Found item submitted');
-    console.log('Line:', selectedLine);
-    console.log('Station:', selectedStation);
-    // Add form submission logic here
-  };
+    e.preventDefault()
+    console.log("Found Item Form Submitted:", formData)
+  }
+
+  const stationsOptions = formData.line ? getStationsForLine(formData.line.value) : []
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-      <h2 className="text-2xl font-bold mb-4">Report Found Item</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" placeholder="Your Name" className="w-full border p-2 rounded" required />
-        <input type="text" placeholder="Item Description" className="w-full border p-2 rounded" required />
-
-        <Select
-          options={lineOptions}
-          placeholder="At which Metro Line?"
-          value={selectedLine}
-          onChange={(line) => {
-            setSelectedLine(line);
-            setSelectedStation(null); // reset station on line change
-          }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-3xl mx-auto bg-[#121212] p-8 rounded-2xl shadow-2xl text-white"
+    >
+      <h2 className="text-3xl font-bold mb-6 text-center">Report Found Item</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <input
+          type="text"
+          name="name"
+          placeholder="Your Name"
+          value={formData.name}
+          onChange={handleChange}
+          className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
+          required
         />
-
-        <Select
-          options={filteredStations}
-          placeholder="At which Station?"
-          value={selectedStation}
-          onChange={setSelectedStation}
-          isSearchable
-          isDisabled={!selectedLine}
+        <input
+          type="text"
+          name="contact"
+          placeholder="Contact Number"
+          value={formData.contact}
+          onChange={handleChange}
+          className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
+          required
         />
-
-        <input type="file" accept="image/*" className="block w-full" />
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">Submit</button>
+        <input
+          type="text"
+          name="item"
+          placeholder="Found Item Description"
+          value={formData.item}
+          onChange={handleChange}
+          className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
+          required
+        />
+        <div>
+          <label className="block mb-2 text-sm">At which line (of Delhi Metro)</label>
+          <Select
+            options={metroLines}
+            value={formData.line}
+            onChange={handleLineChange}
+            placeholder="Select Metro Line"
+            className="text-black"
+          />
+        </div>
+        <div>
+          <label className="block mb-2 text-sm">At which station?</label>
+          <Select
+            options={stationsOptions}
+            value={formData.station}
+            onChange={handleStationChange}
+            placeholder="Select Station"
+            className="text-black"
+          />
+        </div>
+        <div>
+          <label className="block mb-2 text-sm">At which place?</label>
+          <Select
+            options={placeOptions}
+            value={formData.place}
+            onChange={handlePlaceChange}
+            placeholder="Select Place"
+            className="text-black"
+          />
+        </div>
+        <PhotoUploadSection />
+        <button
+          type="submit"
+          className="bg-green-700 hover:bg-green-700 text-white py-3 px-6 rounded w-full font-semibold transition-all"
+        >
+          Submit Found Report
+        </button>
       </form>
-    </div>
-  );
+    </motion.div>
+  )
 }
+
+export default FoundForm

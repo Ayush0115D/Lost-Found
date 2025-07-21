@@ -1,69 +1,97 @@
-// src/components/LostForm.jsx
-import React, { useState } from 'react';
-import Select from 'react-select';
-import { metroLines, getStationsForLine } from './stations'; 
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import Select from "react-select";
+import { metroLines, getStationsForLine } from "./stations";
 
-export default function LostForm() {
+function LostForm() {
   const [selectedLine, setSelectedLine] = useState(null);
   const [selectedStation, setSelectedStation] = useState(null);
-  const navigate = useNavigate();
+  const [image, setImage] = useState(null);
 
-  const lineOptions = metroLines.map(line => ({
-    label: line.label,
-    value: line.value,
-    description: line.description,
-  }));
-
-  const filteredStations = selectedLine
-    ? getStationsForLine(selectedLine.value)
-    : [];
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Lost item submitted');
-    console.log('Line:', selectedLine);
-    console.log('Station:', selectedStation);
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setImage(URL.createObjectURL(file));
+    }
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-      <h2 className="text-2xl font-bold mb-4">Report Lost Item</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" placeholder="Your Name" className="w-full border p-2 rounded" required />
-        <input type="text" placeholder="Item Description" className="w-full border p-2 rounded" required />
-
-        <Select
-          options={lineOptions}
-          placeholder="At which Metro Line?"
-          value={selectedLine}
-          onChange={(line) => {
-            setSelectedLine(line);
-            setSelectedStation(null); // reset station on line change
-          }}
-        />
-
-        <Select
-          options={filteredStations}
-          placeholder="At which Station?"
-          value={selectedStation}
-          onChange={setSelectedStation}
-          isSearchable
-          isDisabled={!selectedLine}
-        />
-
-        <input type="file" accept="image/*" className="block w-full" />
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Submit</button>
-      </form>
-
-      {/* Optional debug output */}
-      {selectedLine && (
-        <div className="mt-4 text-gray-600">
-          <strong>Selected Line:</strong> {selectedLine.label} <br />
-          <strong>Description:</strong> {selectedLine.description}
+    <div className="bg-gray-900 text-white rounded-2xl shadow-xl p-8 max-w-3xl mx-auto">
+      <h2 className="text-3xl font-bold mb-6 text-center text-white">
+        Report a Lost Item
+      </h2>
+      <form className="space-y-6">
+        <div>
+          <label className="block text-sm mb-1">Your Full Name</label>
+          <input
+            type="text"
+            placeholder="Enter your name"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+          />
         </div>
-      )}
+        <div>
+          <label className="block text-sm mb-1">Your Contact Number</label>
+          <input
+            type="text"
+            placeholder="Enter your number"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Item Description</label>
+          <textarea
+            placeholder="Describe the item"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+          ></textarea>
+        </div>
+        <div>
+          <label className="block text-sm mb-1">At which Line</label>
+          <Select
+            options={metroLines}
+            value={selectedLine}
+            onChange={(line) => {
+              setSelectedLine(line);
+              setSelectedStation(null);
+            }}
+            className="text-black"
+            placeholder="Select a metro line"
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">At which Station</label>
+          <Select
+            options={getStationsForLine(selectedLine?.value)}
+            value={selectedStation}
+            onChange={setSelectedStation}
+            className="text-black"
+            placeholder="Select a station"
+            isDisabled={!selectedLine}
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Upload Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="w-full p-2 bg-gray-800 text-white border border-gray-700 rounded"
+          />
+          {image && (
+            <img
+              src={image}
+              alt="Uploaded"
+              className="mt-3 h-32 object-cover rounded"
+            />
+          )}
+        </div>
+        <button
+          type="submit"
+          className="w-full py-3 rounded bg-blue-600 hover:bg-blue-700 transition"
+        >
+          Submit Lost Item
+        </button>
+      </form>
     </div>
   );
 }
+
+export default LostForm;

@@ -1,29 +1,21 @@
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import LostForm from '../components/LostForm'
-import FoundForm from '../components/FoundForm'
+
+import { useSearchParams } from "react-router-dom"
+import LostForm from "../components/LostForm"
+import FoundForm from "../components/FoundForm"
+import FeatureSection from "../components/FeatureSection" // Reusing FeatureSection component
 
 function Report() {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  const formType = searchParams.get('type')
+  const [searchParams] = useSearchParams()      
+  const type = searchParams.get("type")
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">
-          {formType === 'found' ? 'Report Found Item' : 'Report Lost Item'}
-        </h2>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4 md:px-8">
+      {type === "lost" && <LostForm />}
+      {type === "found" && <FoundForm />}
 
-        {formType === 'found' ? <FoundForm /> : <LostForm />}
-
-        <div className="text-center mt-6">
-          <button
-            onClick={() => navigate('/')}
-            className="text-blue-600 hover:underline font-medium"
-          >
-            ← Back to Home
-          </button>
-        </div>
+      {/* Reusable Feature Section */}
+      <div className="mt-20">
+            <FeatureSection />
       </div>
     </div>
   )
