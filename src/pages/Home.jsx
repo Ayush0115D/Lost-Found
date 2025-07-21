@@ -14,12 +14,21 @@ function Home() {
     <div className="bg-[#1e1e1e] text-blue-50 min-h-screen">
       <Header />
 
-      <div className="mt-16 text-center px-4">
-        <h1 className="text-4xl font-bold mb-2">Lost & Found Portal - DMRC</h1>
-        <p className="text-lg text-gray-300">
-          Helping you recover what's important
-        </p>
-      </div>
+   <div
+  className="mt-16 text-center px-4"
+  data-aos="fade-up"
+  data-aos-duration="800"
+>
+  <h1 className="text-5xl font-bold mb-4 text-white tracking-tight">
+    Lost & Found Portal <span className="text-blue-400">– DMRC</span>
+  </h1>
+  <p className="text-lg md:text-xl text-gray-300 italic">
+    Making it easier to get your lost items back
+  </p>
+  <div className="mt-4 flex justify-center">
+    <div className="h-1 w-24 bg-blue-500 rounded-full"></div>
+  </div>
+</div>
 
       {/* Button Cards */}
      <div className="mt-12 flex flex-col md:flex-row justify-center gap-6 px-4">
