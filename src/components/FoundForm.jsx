@@ -1,7 +1,7 @@
 // src/components/FoundForm.jsx
 import React, { useState } from 'react';
 import Select from 'react-select';
-import { metroLines, stations } from '../data/stations';
+import { metroLines, getStationsForLine } from './stations'; 
 import { useNavigate } from 'react-router-dom';
 
 export default function FoundForm() {
@@ -10,14 +10,21 @@ export default function FoundForm() {
   const navigate = useNavigate();
 
   const filteredStations = selectedLine
-    ? stations.filter(station => station.line === selectedLine.value)
+    ? getStationsForLine(selectedLine.value)
     : [];
 
-  const lineOptions = metroLines.map(line => ({ label: line, value: line }));
+  const lineOptions = metroLines.map(line => ({
+    label: line.label,
+    value: line.value,
+    description: line.description
+  }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Found item submitted');
+    console.log('Line:', selectedLine);
+    console.log('Station:', selectedStation);
+    // Add form submission logic here
   };
 
   return (
@@ -32,7 +39,10 @@ export default function FoundForm() {
           options={lineOptions}
           placeholder="At which Metro Line?"
           value={selectedLine}
-          onChange={setSelectedLine}
+          onChange={(line) => {
+            setSelectedLine(line);
+            setSelectedStation(null); // reset station on line change
+          }}
         />
 
         <Select

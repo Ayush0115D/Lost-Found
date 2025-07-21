@@ -1,7 +1,7 @@
 // src/components/LostForm.jsx
 import React, { useState } from 'react';
 import Select from 'react-select';
-import { metroLines, stations } from '../data/stations';
+import { metroLines, getStationsForLine } from './stations'; 
 import { useNavigate } from 'react-router-dom';
 
 export default function LostForm() {
@@ -9,15 +9,21 @@ export default function LostForm() {
   const [selectedStation, setSelectedStation] = useState(null);
   const navigate = useNavigate();
 
-  const filteredStations = selectedLine
-    ? stations.filter(station => station.line === selectedLine.value)
-    : [];
+  const lineOptions = metroLines.map(line => ({
+    label: line.label,
+    value: line.value,
+    description: line.description,
+  }));
 
-  const lineOptions = metroLines.map(line => ({ label: line, value: line }));
+  const filteredStations = selectedLine
+    ? getStationsForLine(selectedLine.value)
+    : [];
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Lost item submitted');
+    console.log('Line:', selectedLine);
+    console.log('Station:', selectedStation);
   };
 
   return (
@@ -32,7 +38,10 @@ export default function LostForm() {
           options={lineOptions}
           placeholder="At which Metro Line?"
           value={selectedLine}
-          onChange={setSelectedLine}
+          onChange={(line) => {
+            setSelectedLine(line);
+            setSelectedStation(null); // reset station on line change
+          }}
         />
 
         <Select
@@ -47,6 +56,14 @@ export default function LostForm() {
         <input type="file" accept="image/*" className="block w-full" />
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Submit</button>
       </form>
+
+      {/* Optional debug output */}
+      {selectedLine && (
+        <div className="mt-4 text-gray-600">
+          <strong>Selected Line:</strong> {selectedLine.label} <br />
+          <strong>Description:</strong> {selectedLine.description}
+        </div>
+      )}
     </div>
   );
 }
