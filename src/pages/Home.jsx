@@ -1,37 +1,37 @@
-import { useNavigate } from "react-router-dom"
-import FeatureSection from "../components/FeatureSection"
+import React from "react";
+import MetroNetworkCard from "../components/MetroNetworkCard";
+import FeatureSection from "../components/FeatureSection";
+import Footer from "../components/DMRCFooter";
 
-function Home() {
-  const navigate = useNavigate()
-
+const Home = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
-      <h1 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-white mb-8">
-        DMRC Lost & Found
-      </h1>
-
-      {/* Buttons */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition"
-          onClick={() => navigate("/report?type=lost")}
+    <div className="min-h-screen bg-[#0d0d0d] text-white flex flex-col items-center px-4 py-8 space-y-12">
+      {/* Your original buttons section */}
+      <h1 className="text-4xl font-bold text-center mb-6">DMRC Lost & Found</h1>
+      <div className="flex space-x-6 mb-10">
+        <a
+          href="/report?type=lost"
+          className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl text-lg font-semibold shadow-lg"
         >
           Report Lost Item
-        </button>
-        <button
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition"
-          onClick={() => navigate("/report?type=found")}
+        </a>
+        <a
+          href="/report?type=found"
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl text-lg font-semibold shadow-lg"
         >
           Report Found Item
-        </button>
+        </a>
       </div>
 
-      {/* Reusable Feature Section */}
-      <div className="mt-16 w-full">
-        <FeatureSection />
-      </div>
+      {/* Metro Network Card */}
+      <MetroNetworkCard />
+
+      {/* New Feature Cards Section */}
+      <FeatureSection />
+
+      {/* Footer - Placed at the end */}
+      <Footer />
     </div>
-  )
-}
-
-export default Home
+  );
+};
+export default Home;
