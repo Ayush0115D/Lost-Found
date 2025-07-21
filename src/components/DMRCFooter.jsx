@@ -27,7 +27,7 @@ const DMRCFooter = () => {
         <div>
           <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
           <ul className="text-gray-300 space-y-2">
-            <li>How It Works</li>
+            {/* <li>How It Works</li> */}
             <li>FAQs</li>
             <li>Contact Support</li>
             <li>Metro Station Directory</li>
