@@ -15,7 +15,7 @@ function LostForm() {
   };
 
   return (
-    <div className="bg-gray-900 text-white rounded-2xl shadow-xl p-8 max-w-3xl mx-auto">
+    <div className="bg-black text-white rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto mt-6">
       <h2 className="text-3xl font-bold mb-6 text-center text-white">
         Report a Lost Item
       </h2>
