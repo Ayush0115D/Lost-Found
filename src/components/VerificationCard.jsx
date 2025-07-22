@@ -1,26 +1,36 @@
 import React from "react";
-import { ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { BadgeCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
-function VerificationCard() {
+const VerificationCard = () => {
   const navigate = useNavigate();
+  const handleClick = () => {
+    navigate("/verify");
+  };
 
   return (
-    <div className="bg-gray-900 text-blue-50 font-bold p-6 rounded-2xl shadow-lg mt-10 max-w-xl mx-auto">
-      <div className="flex items-center gap-4 mb-4">
-        <ShieldCheck className="text-blue-400 w-8 h-8" />
-        <h2 className="text-2xl font-bold">Verification & Claim</h2>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 30 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+      className="bg-[#0d1b2a] rounded-2xl shadow-lg p-6 md:p-8 w-full max-w-md text-center border border-[#1c2f40]"
+    >
+      <div className="flex justify-center mb-4">
+        <BadgeCheck className="w-10 h-10 text-red-600" />
       </div>
-      <p className="text-gray-300 mb-4">
-        Verify your identity and claim your reported item securely.
+      <h2 className="text-2xl font-bold text-white mb-2">Verify & Claim</h2>
+      <p className="text-gray-300 mb-6 text-sm md:text-base">
+        Already reported an item? Verify and claim it securely with your report ID.
       </p>
       <button
-        onClick={() => navigate("/verify")}
-        className="px-5 py-2 font-bold bg-blue-600 hover:bg-blue-700 text-white rounded transition "
+        onClick={handleClick}
+        className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full transition"
       >
-        Start Verification
+        Verify Claim
       </button>
-    </div>
+    </motion.div>
   );
-}
+};
 export default VerificationCard;

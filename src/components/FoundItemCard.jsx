@@ -8,19 +8,19 @@ const FoundItemCard = () => {
 
   return (
     <motion.div
-      onClick={() => navigate("/report?type=found")}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       className="cursor-pointer bg-gray-900 hover:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 transition w-full md:w-1/3 text-center"
     >
       <div className="flex justify-center mb-4">
-        <LocateFixed className="w-10 h-10 text-white" />
+        <LocateFixed className="h-10 w-10 text-green-400" />
       </div>
-      <h3 className="text-xl font-bold text-blue-50 mb-2">Found an Item?</h3>
-      <p className="text-gray-300 mb-4 font-bold">
-        Help someone reunite with their lost belongings by reporting a found item.
-      </p>
-      <button className="bg-white font-bold text-gray-900 py-2 px-4 rounded-full transition hover:bg-gray-200">
+      <h3 className="text-xl font-semibold mb-2">Found an Item?</h3>
+      <p className="text-gray-400 mb-4">Let us know so the rightful owner can claim it.</p>
+      <button
+        onClick={() => navigate("/report?type=found")}
+        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full transition"
+      >
         Report Found Item
       </button>
     </motion.div>
