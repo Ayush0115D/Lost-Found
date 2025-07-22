@@ -57,15 +57,15 @@ function VerifyClaim() {
           </div>
 
           <div>
-            <label className="block text-sm mb-1">OTP Verification</label>
+            <label className="block text-sm mb-1">Metro card no./QR Code</label>
             <input
               type="text"
-              name="otp"
-              value={form.otp}
+              name="metroCardNo"
+              value={form.metroCardNo}
               onChange={handleChange}
               required
               className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
-              placeholder="Enter received OTP"
+              placeholder="Enter metro card number/QR Code"
             />
           </div>
 
