@@ -1,64 +1,70 @@
-# React
+# 🧳 DMRC Lost & Found Portal
 
-A modern Full stack project utilizing the latest frontend technologies ,backend technologies and tools for building responsive web applications.
+A modern and user-friendly Lost & Found web application for the **Delhi Metro Rail Corporation (DMRC)**. Built with the **MERN stack**, this portal helps users report, find, and claim lost items easily.
+
+---
 
 ## 🚀 Features
 
-- **React 18** - React version with improved rendering and concurrent features
-- **Vite** - Lightning-fast build tool and development server
-- **Redux Toolkit** - State management with simplified Redux setup
-- **TailwindCSS** - Utility-first CSS framework with extensive customization
-- **React Router v6** - Declarative routing for React applications
-- **Data Visualization** - Integrated D3.js and Recharts for powerful data visualization
-- **Form Management** - React Hook Form for efficient form handling
-- **Animation** - Framer Motion for smooth UI animations
-- **Testing** - Jest and React Testing Library setup
+- 🎫 **Lost & Found Reporting Forms**
+  - Metro line and station selection via searchable dropdowns
+  - Image upload with drag & drop
+  - Clean, step-wise UI for better UX
 
-## 📋 Prerequisites
+- 🔍 **Verification & Claim Page**
+  - OTP-based (simulated) verification
+  - Upload ID proof and notes for item recovery
 
-- Node.js (v14.x or higher)
-- npm or yarn
+- 🛡️ **Authentication**
+  - Secure login & signup
+  - Role-based access for users and admins
 
-## 🛠️ Installation
+- 🗺️ **Metro Network Map + UI Highlights**
+  - Custom Metro Cards & Feature Cards
+  - Smooth animations using AOS/Framer Motion
 
-1. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-   
-2. Start the development server:
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
+---
+
+## 🛠️ Tech Stack
+
+**Frontend:**
+- React.js + Vite
+- Tailwind CSS
+- React Router
+- Lucide-react (icons)
+- React-select (dropdowns)
+
+**Backend:**
+- Express.js
+- SQL (MySQL/PostgreSQL)
+- JWT-based Authentication
+
+---
 
 ## 📁 Project Structure
+src/
+├── components/
+│ ├── LostForm.jsx, FoundForm.jsx
+│ ├── VerificationCard.jsx, FeatureCard.jsx
+│ ├── MetroNetworkCard.jsx, Header.jsx, Footer.jsx
+├── pages/
+│ ├── Home.jsx, Report.jsx, Verify.jsx
+├── backend/
+│ ├── routes/, controllers/, models/
+│ └── auth/, db/
 
-```
-react_app/
-├── public/             # Static assets
-├── src/
-│   ├── components/     # Reusable UI components
-│   ├── pages/          # Page components
-│   ├── App.jsx         # Main application component
-│   ├── Routes.jsx      # Application routes
-│   └── index.jsx       # Application entry point
-├── index.html          # HTML template
-├── package.json        # Project dependencies and scripts
-├── tailwind.config.js  # Tailwind CSS configuration
-└── vite.config.js      # Vite configuration
-```
+---
 
-## 🎨 Styling
+## ⚙️ Setup Instructions
 
-This project uses Tailwind CSS for styling. The configuration includes:
+1. **Clone the repo**  
+   `git clone https://github.com/yourusername/dmrc-lost-found.git`
 
-- Forms plugin for form styling
-- Animation utilities
+2. **Install dependencies**
+3.  cd client # React frontend
+npm install
 
-## 📱 Responsive Design
+cd ../server # Express backend
+npm install
 
-The app is built with responsive design using Tailwind CSS.
+4. **Run the app**
