@@ -1,70 +1,12 @@
-# 🧳 DMRC Lost & Found Portal
+# React + Vite
 
-A modern and user-friendly Lost & Found web application for the **Delhi Metro Rail Corporation (DMRC)**. Built with the **MERN stack**, this portal helps users report, find, and claim lost items easily.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
----
+Currently, two official plugins are available:
 
-## 🚀 Features
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-- 🎫 **Lost & Found Reporting Forms**
-  - Metro line and station selection via searchable dropdowns
-  - Image upload with drag & drop
-  - Clean, step-wise UI for better UX
+## Expanding the ESLint configuration
 
-- 🔍 **Verification & Claim Page**
-  - OTP-based (simulated) verification
-  - Upload ID proof and notes for item recovery
-
-- 🛡️ **Authentication**
-  - Secure login & signup
-  - Role-based access for users and admins
-
-- 🗺️ **Metro Network Map + UI Highlights**
-  - Custom Metro Cards & Feature Cards
-  - Smooth animations using AOS/Framer Motion
-
----
-
-## 🛠️ Tech Stack
-
-**Frontend:**
-- React.js + Vite
-- Tailwind CSS
-- React Router
-- Lucide-react (icons)
-- React-select (dropdowns)
-
-**Backend:**
-- Express.js
-- SQL (MySQL/PostgreSQL)
-- JWT-based Authentication
-
----
-
-## 📁 Project Structure
-src/
-├── components/
-│ ├── LostForm.jsx, FoundForm.jsx
-│ ├── VerificationCard.jsx, FeatureCard.jsx
-│ ├── MetroNetworkCard.jsx, Header.jsx, Footer.jsx
-├── pages/
-│ ├── Home.jsx, Report.jsx, Verify.jsx
-├── backend/
-│ ├── routes/, controllers/, models/
-│ └── auth/, db/
-
----
-
-## ⚙️ Setup Instructions
-
-1. **Clone the repo**  
-   `git clone https://github.com/yourusername/dmrc-lost-found.git`
-
-2. **Install dependencies**
-3.  cd client # React frontend
-npm install
-
-cd ../server # Express backend
-npm install
-
-4. **Run the app**
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
