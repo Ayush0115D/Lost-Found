@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
-import metroImage from "../assets/metro.jpg";
 import { useNavigate } from "react-router-dom";
+import metroImage from "../assets/metro.jpg";
 
 function Register() {
   const navigate = useNavigate();
@@ -9,6 +9,12 @@ function Register() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleNavigateToLogin = () => {
+    setTimeout(() => {
+      navigate("/login");
+    }, 500);
+  };
 
   return (
     <div
@@ -22,7 +28,8 @@ function Register() {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        exit={{ opacity: 0, y: -50 }}
+        transition={{ duration: 0.5 }}
         className="w-full max-w-md p-8 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-lg shadow-[0_0_30px_rgba(0,0,0,0.3)]"
       >
         <h2 className="text-3xl font-bold text-center mb-6 text-white drop-shadow-md">
@@ -61,7 +68,7 @@ function Register() {
         <p className="mt-4 text-sm text-center text-white/80">
           Already have an account?{" "}
           <button
-            onClick={() => navigate("/login")}
+            onClick={handleNavigateToLogin}
             className="text-cyan-400 hover:underline transition"
           >
             Login
