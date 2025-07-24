@@ -4,6 +4,7 @@ import Report from './pages/Report'
 import VerifyClaim from './components/VerifyClaim'
 import AdminDashboard from './pages/AdminDashboard'
 import Register from './pages/Register'
+import Login from './pages/Login'
 function App() {
   return (
     <Router>
@@ -13,6 +14,7 @@ function App() {
        <Route path="/verify" element={<VerifyClaim />} />    
    <Route path="/admin" element={<AdminDashboard />} />
            <Route path="/register" element={<Register />} />
+           <Route path="/login" element={<Login />} />
       </Routes>
      </Router>
   )
