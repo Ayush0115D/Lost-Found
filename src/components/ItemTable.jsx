@@ -1,97 +1,138 @@
 import React, { useState } from "react";
 import dummyData from "../data/dummyData";
 
-function ItemTable() {
+const ItemTable = () => {
   const [filterType, setFilterType] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("date");
+  const [items, setItems] = useState(dummyData); // track deletions & status changes
 
-  const filteredItems =
-    filterType === "All"
-      ? dummyData
-      : dummyData.filter((item) => item.type === filterType);
+  const handleClaim = (id) => {
+    const updatedItems = items.map((item) =>
+      item.id === id ? { ...item, status: "Claimed" } : item
+    );
+    setItems(updatedItems);
+  };
+
+  const handleDelete = (id) => {
+    const updatedItems = items.filter((item) => item.id !== id);
+    setItems(updatedItems);
+  };
+
+  const filteredItems = items
+    .filter((item) =>
+      filterType === "All" ? true : item.type === filterType
+    )
+    .filter((item) =>
+      item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortBy === "date") return new Date(b.date) - new Date(a.date);
+      if (sortBy === "name") return a.itemName.localeCompare(b.itemName);
+    });
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white p-6">
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Side Panel */}
-        <div className="md:w-1/5">
-          <h2 className="text-xl font-semibold mb-4">Categories</h2>
-          <ul className="space-y-2">
-            {["All", "Lost", "Found", "Claimed"].map((type) => (
-              <li key={type}>
-                <button
-                  onClick={() => setFilterType(type)}
-                  className={`w-full text-left px-4 py-2 rounded-lg ${
-                    filterType === type
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-800 hover:bg-blue-700"
-                  }`}
-                >
-                  {type} Items
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+    <div className="p-6 text-white min-h-screen bg-[#0b0c2a]">
+      <h2 className="text-2xl font-bold mb-4">Item Records</h2>
 
-        {/* Table Section */}
-        <div className="md:w-4/5">
-          <h1 className="text-3xl font-bold mb-6">
-            {filterType} Items ({filteredItems.length})
-          </h1>
-          <div className="overflow-x-auto">
-            <table className="w-full table-auto bg-white text-black rounded-lg overflow-hidden">
-              <thead className="bg-blue-600 text-white">
-                <tr>
-                  <th className="p-3">Image</th>
-                  <th className="p-3">Item Name</th>
-                  <th className="p-3">Station</th>
-                  <th className="p-3">Date</th>
-                  <th className="p-3">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredItems.map((item) => (
-                  <tr key={item.id} className="border-b hover:bg-gray-100">
-                    <td className="p-3 text-center">
-                      <img
-                        src={item.image}
-                        alt={item.itemName}
-                        className="w-16 h-16 object-cover rounded-md mx-auto"
-                      />
-                    </td>
-                    <td className="p-3 text-center">{item.itemName}</td>
-                    <td className="p-3 text-center">{item.station}</td>
-                    <td className="p-3 text-center">{item.date}</td>
-                    <td className="p-3 text-center">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          item.status === "Claimed"
-                            ? "bg-green-200 text-green-800"
-                            : "bg-yellow-200 text-yellow-800"
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-                {filteredItems.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan="5"
-                      className="p-4 text-center text-gray-500 italic"
-                    >
-                      No items found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+      {/* Form Controls */}
+      <div className="flex flex-wrap gap-4 mb-6">
+        <select
+          className="p-2 rounded bg-[#1a1b3c] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="All">All</option>
+          <option value="Lost Item">Lost Items</option>
+          <option value="Found Item">Found Items</option>
+        </select>
+
+        <input
+          type="text"
+          className="p-2 rounded bg-[#1a1b3c] text-white border border-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="Search item..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <select
+          className="p-2 rounded bg-[#1a1b3c] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <option value="date">Sort by Date</option>
+          <option value="name">Sort by Name</option>
+        </select>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto rounded-lg">
+        <table className="w-full text-left bg-blue-100 text-black rounded-lg">
+          <thead className="bg-gray-500 text-white">
+            <tr>
+              <th className="p-3">Image</th>
+              <th className="p-3">Item</th>
+              <th className="p-3">Station</th>
+              <th className="p-3">Date</th>
+              <th className="p-3">Type</th>
+              <th className="p-3">Status</th>
+              <th className="p-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredItems.map((item) => (
+              <tr
+                key={item.id}
+                className="border-b hover:bg-gray-100 transition"
+              >
+                <td className="p-2">
+                  <img
+                    src={item.image}
+                    alt={item.itemName}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                </td>
+                <td className="p-2">{item.itemName}</td>
+                <td className="p-2">{item.station}</td>
+                <td className="p-2">{item.date}</td>
+                <td className="p-2">{item.type}</td>
+                <td className="p-2">{item.status}</td>
+                <td className="p-2 space-x-2">
+                  {/* Mark as Claimed Button */}
+                  <button
+                    onClick={() => handleClaim(item.id)}
+                    disabled={item.status === "Claimed"}
+                    className={`px-3 py-1 rounded text-sm font-medium ${
+                      item.status === "Claimed"
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : "bg-green-600 hover:bg-green-700 text-white"
+                    }`}
+                  >
+                    {item.status === "Claimed" ? "Claimed" : "Mark as Claimed"}
+                  </button>
+
+                  {/* Delete Button */}
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm font-medium"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* No Items Message */}
+        {filteredItems.length === 0 && (
+          <div className="text-center py-6 text-gray-400">
+            No items match your criteria.
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default ItemTable;
