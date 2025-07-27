@@ -9,7 +9,7 @@ import Login from './pages/Login';
 import PrivateRoute from './components/PrivateRoute';
 import LogoutButton from "./components/LogoutButton";
 import { useEffect, useState } from "react";
-
+import SuccessScreen from "./components/SuccessScreen";
 // Wrapper component to handle logout button visibility
 function AppWrapper() {
   const location = useLocation();
@@ -35,6 +35,8 @@ function AppWrapper() {
         <Route path="/report" element={<PrivateRoute><Report /></PrivateRoute>} />
         <Route path="/verify" element={<PrivateRoute><VerifyClaim /></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
+        <Route path="/success" element={<PrivateRoute><SuccessScreen /></PrivateRoute>} />
+
       </Routes>
     </>
   );

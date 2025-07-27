@@ -1,16 +1,29 @@
 const FoundItem = require("../models/FoundItem");
+const { v4: uuidv4 } = require("uuid");
 
 exports.createFoundItem = async (req, res) => {
   try {
     const { fullName, contactNumber, description, metroLine, station, place } = req.body;
     const image = req.file ? req.file.filename : null;
 
+    const reportId = "FOUND-" + uuidv4().slice(0, 8).toUpperCase();
+
     const item = new FoundItem({
-      fullName, contactNumber, description, metroLine, station, place, image
+      fullName,
+      contactNumber,
+      description,
+      metroLine,
+      station,
+      place,
+      image,
+      reportId, 
     });
 
     await item.save();
-    res.status(201).json({ message: "Found item reported", item });
+    res.status(201).json({
+      message: "Found item reported successfully",
+      reportId,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -1,9 +1,9 @@
-// src/components/FoundForm.jsx
 import React, { useState } from "react"
 import { motion } from "framer-motion"
 import Select from "react-select"
 import { metroLines, getStationsForLine } from "./stations"
 import PhotoUploadSection from "./PhotoUploadSection"
+import { v4 as uuidv4 } from "uuid"
 
 const placeOptions = [
   { value: "Concourse", label: "Station Concourse" },
@@ -22,6 +22,8 @@ function FoundForm() {
     station: null,
     place: null,
   })
+  const [submitted, setSubmitted] = useState(false)
+  const [reportId, setReportId] = useState("")
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -55,10 +57,29 @@ function FoundForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log("Found Item Form Submitted:", formData)
+    const id = "FND-" + uuidv4().slice(0, 8).toUpperCase()
+    setReportId(id)
+    setSubmitted(true)
+    console.log("Found Item Form Submitted:", { ...formData, id })
   }
 
   const stationsOptions = formData.line ? getStationsForLine(formData.line.value) : []
+
+  if (submitted) {
+    return (
+      <div className="text-center text-white bg-[#121212] p-10 rounded-2xl max-w-xl mx-auto">
+        <h2 className="text-3xl font-bold mb-4">Report Submitted!</h2>
+        <p className="mb-2">Thank you for reporting a found item.</p>
+        <p className="font-semibold mb-4">Your Report ID is: <span className="text-green-400">{reportId}</span></p>
+        <button
+          onClick={() => window.print()}
+          className="bg-green-600 px-4 py-2 rounded hover:bg-green-700"
+        >
+          Print Acknowledgment
+        </button>
+      </div>
+    )
+  }
 
   return (
     <motion.div
