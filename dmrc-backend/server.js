@@ -7,7 +7,7 @@ const lostRoutes = require("./routes/lostItemRoutes");
 const foundRoutes = require("./routes/foundItemRoutes");
 const verificationRoutes = require("./routes/verificationRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-
+const homeRoutes = require("./routes/homeRoutes");
 dotenv.config();
 connectDB();
 
@@ -17,10 +17,12 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/lost", lostRoutes);
 app.use("/api/found", foundRoutes);
+app.use("/api/home", homeRoutes);
 app.use("/api/verify", verificationRoutes);
 app.use("/api/admin", adminRoutes);
 
