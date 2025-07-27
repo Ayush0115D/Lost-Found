@@ -19,7 +19,7 @@ const LostItemCard = () => {
       <p className="text-gray-400 mb-4">Submit a report to help us locate it quickly.</p>
       <button
         onClick={() => navigate("/report?type=lost")}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full transition"
+        className="bg-blue-600 hover:bg-blue-700 font-semibold text-white px-6 py-2 rounded-full transition"
       >
         Report Lost Item
       </button>

@@ -19,7 +19,7 @@ const FoundItemCard = () => {
       <p className="text-gray-400 mb-4">Let us know so the rightful owner can claim it.</p>
       <button
         onClick={() => navigate("/report?type=found")}
-        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full transition"
+        className="bg-green-600 hover:bg-green-700  font-semibold text-white px-6 py-2 rounded-full transition"
       >
         Report Found Item
       </button>
