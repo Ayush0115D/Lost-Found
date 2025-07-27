@@ -7,11 +7,17 @@ import Admin from './pages/Admin';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import PrivateRoute from './components/PrivateRoute';
+import LogoutButton from "./components/LogoutButton";
 
 function App() {
+  const token = localStorage.getItem("token");
+
   return (
     <AnimatePresence>
       <Router>
+        {/* Show Logout button only if token exists */}
+        {token && <LogoutButton />}
+
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
