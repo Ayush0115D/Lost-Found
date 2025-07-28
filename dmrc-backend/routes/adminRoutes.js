@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const LostItem = require("../models/LostItem");
 const FoundItem = require("../models/FoundItem");
+const authMiddleware = require("../middlewares/authMiddleware");
+const checkAdmin = require("../middlewares/checkAdmin");
 
 // GET all items (lost + found)
 router.get("/items", async (req, res) => {
@@ -16,8 +18,8 @@ router.get("/items", async (req, res) => {
   }
 });
 
-// UPDATE status to "Claimed"
-router.put("/items/:id/claim", async (req, res) => {
+// UPDATE status to "Claimed" (admin only)
+router.put("/items/:id/claim", authMiddleware, checkAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const updatedLost = await LostItem.findByIdAndUpdate(id, { status: "Claimed" }, { new: true });
@@ -32,8 +34,8 @@ router.put("/items/:id/claim", async (req, res) => {
   }
 });
 
-// DELETE item
-router.delete("/items/:id", async (req, res) => {
+// DELETE item (admin only)
+router.delete("/items/:id", authMiddleware, checkAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedLost = await LostItem.findByIdAndDelete(id);

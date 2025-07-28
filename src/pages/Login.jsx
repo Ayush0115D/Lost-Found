@@ -43,6 +43,7 @@ function Login() {
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("userEmail", res.data.user.email); //  For admin access check
       navigate("/");
     } catch (err) {
       setServerError(err.response?.data?.message || "Login failed.");
