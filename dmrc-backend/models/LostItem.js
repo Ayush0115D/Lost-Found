@@ -7,6 +7,7 @@ const lostItemSchema = new mongoose.Schema(
     description: String,
     metroLine: String,
     station: String,
+    metroCardOrQR: String, 
     image: String,
     reportId: {
       type: String,

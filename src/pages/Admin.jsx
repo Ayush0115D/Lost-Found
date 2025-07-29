@@ -1,23 +1,39 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import ItemTable from "../components/ItemTable";
 
 const Admin = () => {
-  const navigate = useNavigate();
-
-  // Get user email from localStorage (you must store this at login time)
-  const userEmail = localStorage.getItem("userEmail");
+  const [isAuthorized, setIsAuthorized] = useState(null); // null = loading, true/false = decision
+  const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    const isAllowed =
-      userEmail === "dhakreayush578@gmail.com" || userEmail?.endsWith("@dmrc.org");
+    const email = localStorage.getItem("userEmail");
+    setUserEmail(email);
 
-    if (!isAllowed) {
-      alert("❌ Access Denied: You are not authorized to view the Admin Panel.");
-      navigate("/"); // Redirect to home
+    if (
+      email === "dhakreayush578@gmail.com" ||
+      (email && email.endsWith("@dmrc.org"))
+    ) {
+      setIsAuthorized(true);
+    } else {
+      setIsAuthorized(false);
     }
-  }, [userEmail, navigate]);
+  }, []);
 
+  // While checking auth, show nothing (avoids flash)
+  if (isAuthorized === null) return <div className="min-h-screen bg-[#0f172a]"></div>;
+
+  // If unauthorized, show blank screen + message
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-[#0f172a] text-red-500 flex items-center justify-center">
+        <h2 className="text-xl font-semibold">
+          ⚠️ Unauthorized Access — Admins only
+        </h2>
+      </div>
+    );
+  }
+
+  // If authorized, show admin content
   return (
     <div className="min-h-screen bg-[#0f172a] text-blue-300 p-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Admin Panel Dashboard</h1>

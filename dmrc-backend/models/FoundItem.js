@@ -7,6 +7,7 @@ const foundItemSchema = new mongoose.Schema(
     description: String,
     metroLine: String,
     station: String,
+     metroCardOrQR: String,
     place: String,
     image: String,
     reportId: {

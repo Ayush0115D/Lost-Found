@@ -3,7 +3,16 @@ const { v4: uuidv4 } = require("uuid");
 
 exports.createFoundItem = async (req, res) => {
   try {
-    const { fullName, contactNumber, description, metroLine, station, place } = req.body;
+    const {
+      fullName,
+      contactNumber,
+      description,
+      metroLine,
+      station,
+      place,
+      metroCardOrQR, 
+    } = req.body;
+
     const image = req.file ? req.file.filename : null;
 
     const reportId = "FOUND-" + uuidv4().slice(0, 8).toUpperCase();
@@ -15,8 +24,9 @@ exports.createFoundItem = async (req, res) => {
       metroLine,
       station,
       place,
+      metroCardOrQR, 
       image,
-      reportId, 
+      reportId,
     });
 
     await item.save();

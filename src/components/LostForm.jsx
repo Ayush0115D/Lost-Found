@@ -9,12 +9,26 @@ function LostForm() {
   const [image, setImage] = useState(null)
   const [submitted, setSubmitted] = useState(false)
   const [reportId, setReportId] = useState("")
+  const [formData, setFormData] = useState({
+    name: "",
+    contact: "",
+    description: "",
+    metroCard: ""
+  })
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0]
     if (file && file.type.startsWith("image/")) {
       setImage(URL.createObjectURL(file))
     }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }))
   }
 
   const handleSubmit = (e) => {
@@ -49,6 +63,9 @@ function LostForm() {
           <label className="block text-sm mb-1">Your Full Name</label>
           <input
             type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
             placeholder="Enter your name"
             className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
             required
@@ -58,7 +75,22 @@ function LostForm() {
           <label className="block text-sm mb-1">Your Contact Number</label>
           <input
             type="text"
+            name="contact"
+            value={formData.contact}
+            onChange={handleChange}
             placeholder="Enter your number"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Metro Card No. / QR Code</label>
+          <input
+            type="text"
+            name="metroCard"
+            value={formData.metroCard}
+            onChange={handleChange}
+            placeholder="Enter metro card number or QR code"
             className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
             required
           />
@@ -66,6 +98,9 @@ function LostForm() {
         <div>
           <label className="block text-sm mb-1">Item Description</label>
           <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
             placeholder="Describe the item"
             className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
             required

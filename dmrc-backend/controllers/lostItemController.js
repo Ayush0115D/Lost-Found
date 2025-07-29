@@ -3,7 +3,15 @@ const { v4: uuidv4 } = require("uuid");
 
 exports.createLostItem = async (req, res) => {
   try {
-    const { fullName, contactNumber, description, metroLine, station } = req.body;
+    const {
+      fullName,
+      contactNumber,
+      description,
+      metroLine,
+      station,
+      metroCardOrQR, 
+    } = req.body;
+
     const image = req.file ? req.file.filename : null;
 
     const reportId = "LOST-" + uuidv4().slice(0, 8).toUpperCase();
@@ -14,8 +22,9 @@ exports.createLostItem = async (req, res) => {
       description,
       metroLine,
       station,
+      metroCardOrQR,
       image,
-      reportId, 
+      reportId,
     });
 
     await item.save();

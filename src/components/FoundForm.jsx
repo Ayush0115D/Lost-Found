@@ -17,6 +17,7 @@ function FoundForm() {
   const [formData, setFormData] = useState({
     name: "",
     contact: "",
+    metroCard: "",
     item: "",
     line: null,
     station: null,
@@ -104,6 +105,15 @@ function FoundForm() {
           name="contact"
           placeholder="Contact Number"
           value={formData.contact}
+          onChange={handleChange}
+          className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
+          required
+        />
+        <input
+          type="text"
+          name="metroCard"
+          placeholder="Metro Card No. / QR No."
+          value={formData.metroCard}
           onChange={handleChange}
           className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
           required
