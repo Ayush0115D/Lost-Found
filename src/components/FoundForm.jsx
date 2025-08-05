@@ -1,172 +1,198 @@
-import React, { useState } from "react"
-import { motion } from "framer-motion"
-import Select from "react-select"
-import { metroLines, getStationsForLine } from "./stations"
-import PhotoUploadSection from "./PhotoUploadSection"
-import { v4 as uuidv4 } from "uuid"
-
-const placeOptions = [
-  { value: "Concourse", label: "Station Concourse" },
-  { value: "Train", label: "Inside Train" },
-  { value: "EntryExit", label: "Station Entry/Exit" },
-  { value: "Platform", label: "Platform" },
-  { value: "Security", label: "Security Check Area" },
-]
+import React, { useState } from "react";
+import Select from "react-select";
+import { metroLines, getStationsForLine } from "./stations";
+import { v4 as uuidv4 } from "uuid";
+import PhotoUploadSection from "./PhotoUploadSection";
 
 function FoundForm() {
+  const [selectedLine, setSelectedLine] = useState(null);
+  const [selectedStation, setSelectedStation] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [reportId, setReportId] = useState("");
   const [formData, setFormData] = useState({
-    name: "",
-    contact: "",
-    metroCard: "",
-    item: "",
-    line: null,
-    station: null,
-    place: null,
-  })
-  const [submitted, setSubmitted] = useState(false)
-  const [reportId, setReportId] = useState("")
+    fullName: "",
+    contactNumber: "",
+    description: "",
+    placeFound: "",
+    metroCardOrQR: "",
+  });
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
-  const handleLineChange = (selectedLine) => {
-    setFormData((prev) => ({
-      ...prev,
-      line: selectedLine,
-      station: null,
-    }))
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleStationChange = (selectedStation) => {
-    setFormData((prev) => ({
-      ...prev,
-      station: selectedStation,
-    }))
-  }
+    const id = "FOUND-" + uuidv4().slice(0, 8).toUpperCase();
+    setReportId(id);
 
-  const handlePlaceChange = (selectedPlace) => {
-    setFormData((prev) => ({
-      ...prev,
-      place: selectedPlace,
-    }))
-  }
+    const data = new FormData();
+    data.append("itemDescription", formData.description);
+    data.append("station", selectedStation?.label || "");
+    data.append("metroLine", selectedLine?.label || "");
+    data.append("place", formData.placeFound);
+    data.append("metroCardOrQR", formData.metroCardOrQR);
+    data.append("reportId", id);
+    data.append("fullName", formData.fullName);
+    data.append("contactNumber", formData.contactNumber);
+    if (imageFile) {
+      data.append("image", imageFile);
+    }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const id = "FND-" + uuidv4().slice(0, 8).toUpperCase()
-    setReportId(id)
-    setSubmitted(true)
-    console.log("Found Item Form Submitted:", { ...formData, id })
-  }
+    try {
+      const res = await fetch("http://localhost:5000/api/found-items", {
+        method: "POST",
+        body: data,
+      });
 
-  const stationsOptions = formData.line ? getStationsForLine(formData.line.value) : []
+      const result = await res.json();
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        alert("Submission failed: " + result.error);
+      }
+    } catch (err) {
+      console.error("Submission Error:", err);
+      alert("Something went wrong.");
+    }
+  };
 
   if (submitted) {
     return (
       <div className="text-center text-white bg-[#121212] p-10 rounded-2xl max-w-xl mx-auto">
         <h2 className="text-3xl font-bold mb-4">Report Submitted!</h2>
-        <p className="mb-2">Thank you for reporting a found item.</p>
-        <p className="font-semibold mb-4">Your Report ID is: <span className="text-green-400">{reportId}</span></p>
+        <p className="mb-2">Thank you for reporting the found item.</p>
+        <p className="font-semibold mb-4">
+          Your Report ID is: <span className="text-blue-400">{reportId}</span>
+        </p>
         <button
           onClick={() => window.print()}
-          className="bg-green-600 px-4 py-2 rounded hover:bg-green-700"
+          className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
         >
           Print Acknowledgment
         </button>
       </div>
-    )
+    );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-3xl mx-auto bg-[#121212] p-8 rounded-2xl shadow-2xl text-blue-100"
-    >
-      <h2 className="text-3xl font-bold mb-6 text-center">Report Found Item</h2>
+    <div className="bg-black text-white rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto mt-6">
+      <h2 className="text-3xl font-bold mb-6 text-center text-white">
+        Report a Found Item
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <input
-          type="text"
-          name="name"
-          placeholder="Your Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
-          required
-        />
-        <input
-          type="text"
-          name="contact"
-          placeholder="Contact Number"
-          value={formData.contact}
-          onChange={handleChange}
-          className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
-          required
-        />
-        <input
-          type="text"
-          name="metroCard"
-          placeholder="Metro Card No. / QR No."
-          value={formData.metroCard}
-          onChange={handleChange}
-          className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
-          required
-        />
-        <input
-          type="text"
-          name="item"
-          placeholder="Found Item Description"
-          value={formData.item}
-          onChange={handleChange}
-          className="w-full p-3 rounded bg-gray-800 text-white placeholder-gray-400"
-          required
-        />
         <div>
-          <label className="block mb-2 text-sm">At which line (of Delhi Metro)</label>
+          <label className="block text-sm mb-1">Your Full Name</label>
+          <input
+            type="text"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+            placeholder="Enter your full name"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Contact Number</label>
+          <input
+            type="text"
+            name="contactNumber"
+            value={formData.contactNumber}
+            onChange={handleChange}
+            placeholder="Enter a valid phone number"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">
+            Metro Card Number or QR Code
+          </label>
+          <input
+            type="text"
+            name="metroCardOrQR"
+            value={formData.metroCardOrQR}
+            onChange={handleChange}
+            placeholder="Enter Metro Card or QR Code number"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Item Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Describe the found item..."
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+            required
+          ></textarea>
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Place Found</label>
+          <input
+            type="text"
+            name="placeFound"
+            value={formData.placeFound}
+            onChange={handleChange}
+            placeholder="Enter exact place where you found the item"
+            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Metro Line</label>
           <Select
             options={metroLines}
-            value={formData.line}
-            onChange={handleLineChange}
-            placeholder="Select Metro Line"
+            value={selectedLine}
+            onChange={(line) => {
+              setSelectedLine(line);
+              setSelectedStation(null);
+            }}
             className="text-black"
+            placeholder="Select a metro line"
           />
         </div>
+
         <div>
-          <label className="block mb-2 text-sm">At which station?</label>
+          <label className="block text-sm mb-1">Station</label>
           <Select
-            options={stationsOptions}
-            value={formData.station}
-            onChange={handleStationChange}
-            placeholder="Select Station"
+            options={getStationsForLine(selectedLine?.value)}
+            value={selectedStation}
+            onChange={setSelectedStation}
             className="text-black"
+            placeholder="Select a station"
+            isDisabled={!selectedLine}
           />
         </div>
+
         <div>
-          <label className="block mb-2 text-sm">At which place?</label>
-          <Select
-            options={placeOptions}
-            value={formData.place}
-            onChange={handlePlaceChange}
-            placeholder="Select Place"
-            className="text-black"
-          />
+          <label className="block text-sm mb-1">Upload Image</label>
+          <PhotoUploadSection onUpload={setImageFile} />
         </div>
-        <PhotoUploadSection />
+
         <button
           type="submit"
-          className="bg-green-700 hover:bg-green-700 text-white py-3 px-6 rounded w-full font-semibold transition-all"
+          className="w-full py-3 rounded bg-blue-600 hover:bg-blue-700 transition"
         >
-          Submit Found Report
+          Submit Found Item
         </button>
       </form>
-    </motion.div>
-  )
+    </div>
+  );
 }
 
-export default FoundForm
+export default FoundForm;

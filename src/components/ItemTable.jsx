@@ -11,11 +11,12 @@ const ItemTable = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/admin/items", {
+        const res = await fetch("/api/admin/items", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+
         const data = await res.json();
         setItems(data);
       } catch (error) {
@@ -147,19 +148,27 @@ const ItemTable = () => {
             {filteredItems.map((item) => (
               <tr key={item._id || item.id} className="border-b hover:bg-gray-100 transition">
                 <td className="p-2">
-                  <img
-                    src={item.image}
-                    alt={item.itemName}
-                    className="w-16 h-16 object-cover rounded"
-                  />
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.itemName}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                  ) : (
+                    <span className="text-gray-500">No Image</span>
+                  )}
                 </td>
                 <td className="p-2">{item.itemName}</td>
                 <td className="p-2">{item.station}</td>
-                <td className="p-2">{new Date(item.date).toLocaleDateString()}</td>
+                <td className="p-2">
+                  {new Date(item.date).toLocaleDateString("en-IN")}
+                </td>
                 <td className="p-2">{item.type}</td>
                 <td className="p-2">{item.status}</td>
-                <td className="p-2">{item.metroCardOrQR}</td>
-                <td className="p-2">{item.type === "Found Item" ? item.place : "N/A"}</td>
+                <td className="p-2">{item.metroCardOrQR || "N/A"}</td>
+                <td className="p-2">
+                  {item.type === "Found Item" ? item.place || "N/A" : "N/A"}
+                </td>
                 <td className="p-2 space-x-2">
                   <button
                     onClick={() => handleClaim(item._id || item.id)}

@@ -19,8 +19,8 @@ app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/lost", lostRoutes);
-app.use("/api/found", foundRoutes);
+app.use("/api/lost-items", lostRoutes);
+app.use("/api/found-items", foundRoutes);
 app.use("/api/home", homeRoutes);
 app.use("/api/verify", verificationRoutes);
 app.use("/api/admin", adminRoutes);

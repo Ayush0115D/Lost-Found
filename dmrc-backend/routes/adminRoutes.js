@@ -5,7 +5,7 @@ const FoundItem = require("../models/FoundItem");
 const authMiddleware = require("../middlewares/authMiddleware");
 const checkAdmin = require("../middlewares/checkAdmin");
 
-// GET /admin/items
+// ✅ GET /api/admin/items - Fetch and format all items
 router.get("/items", async (req, res) => {
   try {
     const lostItems = await LostItem.find();
@@ -14,68 +14,78 @@ router.get("/items", async (req, res) => {
     // Format Lost Items
     const formattedLost = lostItems.map((item) => ({
       id: item._id,
-      image: item.image || "",
-      itemName: item.description || "",  // maps to itemName
+      image: item.imageUrl || "",
+      itemName: item.itemDescription || "",
       station: item.station,
       date: item.createdAt || item.date,
       type: "Lost Item",
-      status: item.status || "Pending",
-      metroCardOrQR: item.metroCardOrQR || "N/A",  // 🆕
-      place: "N/A", // Not applicable for lost items 🆕
+      status: item.status || "Unclaimed",
+      metroCardOrQR: item.metroCardOrQR || "N/A",
+      place: "N/A", // Lost items don't have a 'place' field
     }));
 
     // Format Found Items
     const formattedFound = foundItems.map((item) => ({
       id: item._id,
-      image: item.image || "",
-      itemName: item.description || "", // maps to itemName
+      image: item.imageUrl || "",
+      itemName: item.itemDescription || "",
       station: item.station,
       date: item.createdAt || item.date,
       type: "Found Item",
-      status: item.status || "Pending",
-      metroCardOrQR: item.metroCardOrQR || "N/A", // 🆕
-      place: item.place || "N/A", // 🆕 only for found
+      status: item.status || "Unclaimed",
+      metroCardOrQR: item.metroCardOrQR || "N/A",
+      place: item.place || "N/A", // Only for found items
     }));
 
     const allItems = [...formattedLost, ...formattedFound].sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
 
-    res.json(allItems);
+    res.json(allItems); // ✅ Send final merged JSON list
   } catch (error) {
     console.error("Error fetching items:", error);
     res.status(500).json({ message: "Error fetching items" });
   }
 });
 
-// ✅ UPDATE status to "Claimed"
+// ✅ PUT /api/admin/items/:id/claim - Mark item as claimed
 router.put("/items/:id/claim", authMiddleware, checkAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updatedLost = await LostItem.findByIdAndUpdate(
+    // Try updating in LostItem
+    let updatedItem = await LostItem.findByIdAndUpdate(
       id,
       { status: "Claimed" },
       { new: true }
     );
 
-    const updatedFound = await FoundItem.findByIdAndUpdate(
-      id,
-      { status: "Claimed" },
-      { new: true }
-    );
+    let type = "Lost Item";
 
-    const updatedItem = updatedLost || updatedFound;
-    if (!updatedItem) return res.status(404).json({ message: "Item not found" });
+    // If not found in LostItem, try FoundItem
+    if (!updatedItem) {
+      updatedItem = await FoundItem.findByIdAndUpdate(
+        id,
+        { status: "Claimed" },
+        { new: true }
+      );
+      type = "Found Item";
+    }
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
 
     res.json({
       id: updatedItem._id,
-      image: updatedItem.image || "",
-      itemName: updatedItem.itemName,
+      image: updatedItem.imageUrl || "",
+      itemName: updatedItem.itemDescription || "",
       station: updatedItem.station,
       date: updatedItem.date,
-      type: updatedLost ? "Lost Item" : "Found Item",
+      type,
       status: updatedItem.status,
+      metroCardOrQR: updatedItem.metroCardOrQR || "N/A",
+      place: type === "Found Item" ? updatedItem.place || "N/A" : "N/A",
     });
   } catch (error) {
     console.error("Error updating item status:", error);
@@ -83,7 +93,7 @@ router.put("/items/:id/claim", authMiddleware, checkAdmin, async (req, res) => {
   }
 });
 
-// ✅ DELETE item
+// ✅ DELETE /api/admin/items/:id - Delete item
 router.delete("/items/:id", authMiddleware, checkAdmin, async (req, res) => {
   try {
     const { id } = req.params;
@@ -92,7 +102,9 @@ router.delete("/items/:id", authMiddleware, checkAdmin, async (req, res) => {
     const deletedFound = await FoundItem.findByIdAndDelete(id);
     const deletedItem = deletedLost || deletedFound;
 
-    if (!deletedItem) return res.status(404).json({ message: "Item not found" });
+    if (!deletedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
 
     res.json({ message: "Item deleted successfully" });
   } catch (error) {
