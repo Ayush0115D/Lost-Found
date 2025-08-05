@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const { createFoundItem } = require("../controllers/foundItemController");
+const { createFoundItem, getAllFoundItems } = require("../controllers/foundItemController");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
@@ -10,5 +10,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post("/", upload.single("image"), createFoundItem);
+router.get("/", getAllFoundItems);  // <-- for admin panel
 
 module.exports = router;

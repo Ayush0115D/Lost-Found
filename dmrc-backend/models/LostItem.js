@@ -7,12 +7,17 @@ const lostItemSchema = new mongoose.Schema(
     description: String,
     metroLine: String,
     station: String,
-    metroCardOrQR: String, 
+    metroCardOrQR: String, // Include metro card / QR
     image: String,
     reportId: {
       type: String,
       unique: true,
       required: true,
+    },
+    status: {
+      type: String,
+     enum: ["Pending", "Claimed", "Unclaimed"],
+       default: "Pending",
     },
   },
   { timestamps: true }

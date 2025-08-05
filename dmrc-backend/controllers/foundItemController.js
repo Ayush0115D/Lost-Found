@@ -1,40 +1,52 @@
 const FoundItem = require("../models/FoundItem");
 const { v4: uuidv4 } = require("uuid");
 
+// CREATE Found Item
 exports.createFoundItem = async (req, res) => {
   try {
     const {
-      fullName,
-      contactNumber,
-      description,
-      metroLine,
+      itemDescription,
       station,
+      date,
+      metroCardOrQR,
       place,
-      metroCardOrQR, 
+      imageUrl, // Optional fallback
     } = req.body;
-
-    const image = req.file ? req.file.filename : null;
 
     const reportId = "FOUND-" + uuidv4().slice(0, 8).toUpperCase();
 
+    const image = req.file ? req.file.path : imageUrl || "";
+
     const item = new FoundItem({
-      fullName,
-      contactNumber,
-      description,
-      metroLine,
+      itemDescription,
       station,
+      date: date || new Date(),
+      metroCardOrQR,
       place,
-      metroCardOrQR, 
-      image,
+      imageUrl: image,
       reportId,
+      status: "Unclaimed",
     });
 
     await item.save();
+
     res.status(201).json({
       message: "Found item reported successfully",
       reportId,
     });
   } catch (err) {
+    console.error("Error saving found item:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ✅ GET All Found Items (for admin panel)
+exports.getAllFoundItems = async (req, res) => {
+  try {
+    const items = await FoundItem.find().sort({ date: -1 });
+    res.status(200).json(items);
+  } catch (err) {
+    console.error("Error fetching found items:", err);
     res.status(500).json({ error: err.message });
   }
 };
