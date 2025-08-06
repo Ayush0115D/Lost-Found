@@ -1,106 +1,104 @@
-# 🚇 Lost & Found – Delhi Metro
+# 🚇 Delhi Metro Lost & Found Portal
 
-A full-stack React + Vite web application to report and find lost items on the Delhi Metro. Users can securely report lost/found items, view others' reports, and admins can manage the platform via a dedicated dashboard.
+<div align="center">
+  <img src="https://img.shields.io/badge/React-18+-blue.svg" alt="React">
+  <img src="https://img.shields.io/badge/Node.js-16+-green.svg" alt="Node.js">
+  <img src="https://img.shields.io/badge/MongoDB-Atlas-brightgreen.svg" alt="MongoDB">
+</div>
 
-> Built with ❤️ using React, Node.js, Express, MongoDB, and JWT.
+A full-stack web application to report and find lost items on the Delhi Metro. Built with React, Node.js, Express, MongoDB, and JWT authentication.
 
----
+## ✨ Features
 
-## 📸 Demo
-
-![App Screenshot](./screenshot.png) <!-- Replace with your own screenshot -->
-
-Live Demo: [Coming Soon](#)  
-Backend Repo (if separate): [Coming Soon](#)
-
----
-
-## 🧩 Features
-
-- 🔐 **User Authentication (JWT-based login/register)**
-- 📥 Submit a report for lost or found items
-- 🔍 Search and filter reports
-- 📍 Metro line & station tagging
-- 🖼️ Upload item images *(coming soon)*
-- 🛠️ **Admin Dashboard** for managing reports and users
-- 🗃️ MongoDB for persistent storage
-
----
+- 🔐 **User Authentication** - Secure JWT-based login/register
+- 📝 **Report Items** - Submit lost or found item reports
+- 🔍 **Smart Search** - Filter by name, category, and date
+- 📍 **Metro Integration** - Tag items by specific metro lines and stations
+- 👨‍💼 **Admin Dashboard** - Manage reports and users
+- 📱 **Responsive Design** - Works on all devices
 
 ## 🛠️ Tech Stack
 
-### Frontend:
-- [React](https://reactjs.org/)
-- [Vite](https://vitejs.dev/)
-- [Tailwind CSS](https://tailwindcss.com/) *(if used)*
+### Frontend
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-### Backend:
-- [Node.js](https://nodejs.org/)
-- [Express.js](https://expressjs.com/)
-- [MongoDB](https://www.mongodb.com/)
-- [Mongoose](https://mongoosejs.com/)
-- [JWT (JSON Web Tokens)](https://jwt.io/) for authentication
+### Backend
+![NodeJS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)  
 
----
+## 🚀 Quick Start
 
-## 📁 Project Structure
-```text
-Lost-Found/
-├── dmrc-backend/ # Express backend with MongoDB + JWT
-│ ├── routes/ # Auth, user, item APIs
-│ ├── middleware/ # Auth middleware
-│ └── models/ # User & Item schemas
-├── src/ # React frontend
-│ ├── components/ # Reusable UI
-│ ├── pages/ # Home, Login, Dashboard, Auth state management etc.
-├── public/
-├── .gitignore
-├── package.json
-├── vite.config.js
-└── README.md
-
-## 🚀 Getting Started
-
-### 1. Clone the repo
-
+### 1. Clone & Install
+```bash
 git clone https://github.com/Ayush0115D/Lost-Found.git
-cd Lost-
+cd Lost-Found
+```
 
-### 2. Start the Backend
-
+### 2. Setup Backend
+```bash
 cd dmrc-backend
 npm install
+# Create .env file with MongoDB URI and JWT_SECRET
 npm run dev
+```
 
-3. Start the Frontend
+### 3. Setup Frontend
+```bash
 cd ..
 npm install
 npm run dev
+```
+
+Open `http://localhost:3000` in your browser!
+
+## 📁 Project Structure
+
+```
+Lost-Found/
+├── 📂 dmrc-backend/              # Express.js Backend Server
+│   ├── 📂 config/                # Configuration files
+│   ├── 📂 middleware/            # Custom middleware functions
+│   ├── 📂 models/                # Mongoose data models
+│   ├── 📂 routes/                # API route handlers
+│   ├── 📄 .env                   # Environment variables
+│   ├── 📄 server.js              # Main server entry point
+│   └── 📄 package.json           # Backend dependencies
+│
+├── 📂 src/                       # React Frontend Application
+│   ├── 📂 components/            # Reusable UI components
+│   ├── 📂 pages/                 # Main application pages
+│   ├── 📂 context/               # React Context providers
+│   ├── 📂 utils/                 # Utility functions and helpers
+│   ├── 📄 App.jsx                # Main App component
+│   ├── 📄 main.jsx               # React DOM root
+│   └── 📄 index.css              # Global CSS styles
+│
+├── 📂 public/                    # Static assets
+├── 📄 .env                       # Frontend environment variables
+├── 📄 package.json               # Frontend dependencies
+├── 📄 vite.config.js             # Vite configuration
+└── 📄 README.md                  # Project documentation
+```
+
+## 👥 User Roles
+
+**Regular Users:** Register, report items, search listings  
+**Admins:** Access dashboard, manage all reports and users
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push branch: `git push origin feature/amazing-feature`
+5. Open Pull Request
 
 ---
 
-👥 User Roles
+**Made with ❤️ by [Ayush Kumar](https://github.com/Ayush0115D)**
 
-    Regular User:
-
-        Register / login
-
-        Report lost/found items
-
-        View other users' reports
-
-    Admin:
-
-        Access protected Admin Dashboard
-
-        View & manage all reports
-
-        Remove spam/inappropriate entries
-
-        Manage users (if implemented
-
----
-
-🤝 Contributing
-
-Pull requests are welcome! Open an issue first to suggest major changes.
+⭐ **Star this repo if you found it helpful!**
