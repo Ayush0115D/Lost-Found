@@ -10,10 +10,11 @@ function LostForm() {
   const [imageFile, setImageFile] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [reportId, setReportId] = useState("");
+
   const [formData, setFormData] = useState({
     fullName: "",
     contactNumber: "",
-    description: "",
+    itemDescription: "", // ✅ renamed from 'description'
     metroCardOrQR: "",
   });
 
@@ -32,7 +33,7 @@ function LostForm() {
     setReportId(id);
 
     const data = new FormData();
-    data.append("itemDescription", formData.description);
+    data.append("itemDescription", formData.itemDescription); // ✅ correct field
     data.append("station", selectedStation?.label || "");
     data.append("metroLine", selectedLine?.label || "");
     data.append("metroCardOrQR", formData.metroCardOrQR);
@@ -129,8 +130,8 @@ function LostForm() {
         <div>
           <label className="block text-sm mb-1">Item Description</label>
           <textarea
-            name="description"
-            value={formData.description}
+            name="itemDescription"
+            value={formData.itemDescription}
             onChange={handleChange}
             placeholder="Describe the lost item..."
             className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"

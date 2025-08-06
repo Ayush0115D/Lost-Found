@@ -4,7 +4,7 @@ const lostItemSchema = new mongoose.Schema(
   {
     fullName: String,
     contactNumber: String,
-    description: String,
+    itemDescription: String,
     metroLine: String,
     station: String,
     metroCardOrQR: String, // Include metro card / QR

@@ -10,20 +10,20 @@ exports.createFoundItem = async (req, res) => {
       date,
       metroCardOrQR,
       place,
-      imageUrl, // Optional fallback
     } = req.body;
 
     const reportId = "FOUND-" + uuidv4().slice(0, 8).toUpperCase();
 
-    const image = req.file ? req.file.path : imageUrl || "";
+    // ✅ Save file to 'image' field as defined in schema
+    const image = req.file ? req.file.path : "";
 
     const item = new FoundItem({
       itemDescription,
       station,
+      place,
       date: date || new Date(),
       metroCardOrQR,
-      place,
-      imageUrl: image,
+      image,
       reportId,
       status: "Unclaimed",
     });
@@ -31,7 +31,7 @@ exports.createFoundItem = async (req, res) => {
     await item.save();
 
     res.status(201).json({
-      message: "Found item reported successfully",
+      message: "Found item submitted successfully",
       reportId,
     });
   } catch (err) {

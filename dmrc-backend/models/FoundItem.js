@@ -4,7 +4,7 @@ const foundItemSchema = new mongoose.Schema(
   {
     fullName: String,
     contactNumber: String,
-    description: String,
+    itemDescription: String,
     metroLine: String,
     station: String,
     place: String,

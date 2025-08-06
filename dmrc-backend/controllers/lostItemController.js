@@ -9,19 +9,19 @@ exports.createLostItem = async (req, res) => {
       station,
       date,
       metroCardOrQR,
-      imageUrl, // Optional, in case coming from req.body
     } = req.body;
 
     const reportId = "LOST-" + uuidv4().slice(0, 8).toUpperCase();
 
-    const image = req.file ? req.file.path : imageUrl || "";
+    // ✅ Correct field name is 'image' as per schema
+    const image = req.file ? req.file.path : "";
 
     const item = new LostItem({
       itemDescription,
       station,
       date: date || new Date(),
       metroCardOrQR,
-      imageUrl: image,
+      image,
       reportId,
       status: "Unclaimed",
     });
@@ -38,7 +38,7 @@ exports.createLostItem = async (req, res) => {
   }
 };
 
-// ✅ GET All Lost Items (for admin panel)
+// GET All Lost Items (for admin panel)
 exports.getAllLostItems = async (req, res) => {
   try {
     const items = await LostItem.find().sort({ date: -1 });

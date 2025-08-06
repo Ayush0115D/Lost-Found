@@ -14,27 +14,29 @@ router.get("/items", async (req, res) => {
     // Format Lost Items
     const formattedLost = lostItems.map((item) => ({
       id: item._id,
-      image: item.imageUrl || "",
-      itemName: item.itemDescription || "",
+       image: item.image ? `http://localhost:5000/${item.image}` : "",
+      itemDescription: item.itemDescription || "",
       station: item.station,
       date: item.createdAt || item.date,
       type: "Lost Item",
       status: item.status || "Unclaimed",
       metroCardOrQR: item.metroCardOrQR || "N/A",
       place: "N/A", // Lost items don't have a 'place' field
+        reportId: item.reportId, 
     }));
 
     // Format Found Items
     const formattedFound = foundItems.map((item) => ({
       id: item._id,
-      image: item.imageUrl || "",
-      itemName: item.itemDescription || "",
+       image: item.image ? `http://localhost:5000/${item.image}` : "",
+      itemDescription: item.itemDescription || "",
       station: item.station,
       date: item.createdAt || item.date,
       type: "Found Item",
       status: item.status || "Unclaimed",
       metroCardOrQR: item.metroCardOrQR || "N/A",
       place: item.place || "N/A", // Only for found items
+        reportId: item.reportId, 
     }));
 
     const allItems = [...formattedLost, ...formattedFound].sort(
@@ -79,7 +81,7 @@ router.put("/items/:id/claim", authMiddleware, checkAdmin, async (req, res) => {
     res.json({
       id: updatedItem._id,
       image: updatedItem.imageUrl || "",
-      itemName: updatedItem.itemDescription || "",
+      itemDescription: updatedItem.itemDescription || "",
       station: updatedItem.station,
       date: updatedItem.date,
       type,

@@ -18,6 +18,16 @@ function FoundForm() {
     metroCardOrQR: "",
   });
 
+  const placeOptions = [
+    { value: "Inside Train", label: "Inside Train" },
+    { value: "Platform", label: "Platform" },
+    { value: "Station Concourse", label: "Station Concourse" },
+    { value: "Entry/Exit Gate", label: "Entry/Exit Gate" },
+    { value: "Near Ticket Counter", label: "Near Ticket Counter" },
+    { value: "Escalator / Elevator Area", label: "Escalator / Elevator Area" },
+    { value: "Others", label: "Others" },
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -33,14 +43,15 @@ function FoundForm() {
     setReportId(id);
 
     const data = new FormData();
+    data.append("fullName", formData.fullName);
+    data.append("contactNumber", formData.contactNumber);
     data.append("itemDescription", formData.description);
+    data.append("metroCardOrQR", formData.metroCardOrQR);
     data.append("station", selectedStation?.label || "");
     data.append("metroLine", selectedLine?.label || "");
     data.append("place", formData.placeFound);
-    data.append("metroCardOrQR", formData.metroCardOrQR);
     data.append("reportId", id);
-    data.append("fullName", formData.fullName);
-    data.append("contactNumber", formData.contactNumber);
+
     if (imageFile) {
       data.append("image", imageFile);
     }
@@ -142,14 +153,14 @@ function FoundForm() {
 
         <div>
           <label className="block text-sm mb-1">Place Found</label>
-          <input
-            type="text"
-            name="placeFound"
-            value={formData.placeFound}
-            onChange={handleChange}
-            placeholder="Enter exact place where you found the item"
-            className="w-full p-3 rounded bg-gray-800 border border-gray-700 text-white"
-            required
+          <Select
+            options={placeOptions}
+            value={placeOptions.find((opt) => opt.value === formData.placeFound)}
+            onChange={(selected) =>
+              setFormData((prev) => ({ ...prev, placeFound: selected.value }))
+            }
+            placeholder="📍 Please select where the item was found"
+            className="text-black"
           />
         </div>
 

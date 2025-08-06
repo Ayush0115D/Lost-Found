@@ -9,7 +9,7 @@ const getAllItems = async (req, res) => {
     const formattedLostItems = lostItems.map(item => ({
       id: item._id,
       image: item.imageUrl,
-      itemName: item.itemDescription,
+       itemDescription : item.itemDescription,
       station: item.station,
       date: item.date,
       type: "Lost",
@@ -21,7 +21,7 @@ const getAllItems = async (req, res) => {
     const formattedFoundItems = foundItems.map(item => ({
       id: item._id,
       image: item.imageUrl,
-      itemName: item.itemDescription,
+       itemDescription : item.itemDescription,
       station: item.station,
       date: item.date,
       type: "Found",
