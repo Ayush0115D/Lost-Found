@@ -14,7 +14,7 @@ router.get("/items", async (req, res) => {
     // Format Lost Items
     const formattedLost = lostItems.map((item) => ({
       id: item._id,
-       image: item.image ? `http://localhost:5000/${item.image}` : "",
+      image: item.image ? `http://localhost:5000/${item.image}` : "",
       itemDescription: item.itemDescription || "",
       station: item.station,
       date: item.createdAt || item.date,
@@ -22,13 +22,14 @@ router.get("/items", async (req, res) => {
       status: item.status || "Unclaimed",
       metroCardOrQR: item.metroCardOrQR || "N/A",
       place: "N/A", // Lost items don't have a 'place' field
-        reportId: item.reportId, 
+      reportId: item.reportId,
+      fullName: item.fullName || "N/A", // ✅ Include user full name
     }));
 
     // Format Found Items
     const formattedFound = foundItems.map((item) => ({
       id: item._id,
-       image: item.image ? `http://localhost:5000/${item.image}` : "",
+      image: item.image ? `http://localhost:5000/${item.image}` : "",
       itemDescription: item.itemDescription || "",
       station: item.station,
       date: item.createdAt || item.date,
@@ -36,14 +37,15 @@ router.get("/items", async (req, res) => {
       status: item.status || "Unclaimed",
       metroCardOrQR: item.metroCardOrQR || "N/A",
       place: item.place || "N/A", // Only for found items
-        reportId: item.reportId, 
+      reportId: item.reportId,
+      fullName: item.fullName || "N/A", // ✅ Include user full name
     }));
 
     const allItems = [...formattedLost, ...formattedFound].sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
 
-    res.json(allItems); // ✅ Send final merged JSON list
+    res.json(allItems); // ✅ Final merged list
   } catch (error) {
     console.error("Error fetching items:", error);
     res.status(500).json({ message: "Error fetching items" });
@@ -80,7 +82,7 @@ router.put("/items/:id/claim", authMiddleware, checkAdmin, async (req, res) => {
 
     res.json({
       id: updatedItem._id,
-      image: updatedItem.imageUrl || "",
+      image: updatedItem.image ? `http://localhost:5000/${updatedItem.image}` : "",
       itemDescription: updatedItem.itemDescription || "",
       station: updatedItem.station,
       date: updatedItem.date,
@@ -88,6 +90,8 @@ router.put("/items/:id/claim", authMiddleware, checkAdmin, async (req, res) => {
       status: updatedItem.status,
       metroCardOrQR: updatedItem.metroCardOrQR || "N/A",
       place: type === "Found Item" ? updatedItem.place || "N/A" : "N/A",
+      reportId: updatedItem.reportId,
+      fullName: updatedItem.fullName || "N/A", // ✅ Include full name
     });
   } catch (error) {
     console.error("Error updating item status:", error);
