@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import FeatureSection from "./FeatureSection"; // ✅ Import your feature card section
 
 function VerifyClaim() {
   const [form, setForm] = useState({
@@ -41,7 +42,6 @@ function VerifyClaim() {
     setStatus("");
 
     try {
-      // STEP 1: Verify the claim
       const verifyRes = await axios.post("/api/verify-claim", {
         reportId: form.reportId,
         fullName: form.fullName,
@@ -49,7 +49,6 @@ function VerifyClaim() {
       });
 
       if (verifyRes.data?.match === true) {
-        // STEP 2: Submit the rest of the claim details
         const formData = new FormData();
         formData.append("fullName", form.fullName);
         formData.append("mobileNumber", form.mobile);
@@ -72,8 +71,8 @@ function VerifyClaim() {
 
   if (unauthorized) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center p-8 bg-[#1e1e1e] rounded-xl border border-gray-700">
+      <div className="min-h-screen bg-[#1e1e1e] text-white flex items-center justify-center">
+        <div className="text-center p-8 bg-[#2a2a2a] rounded-xl border border-gray-700">
           <h2 className="text-2xl font-bold text-red-400 mb-4">Unauthorized</h2>
           <p>You are not authorized to access this page.</p>
           <p className="text-sm mt-2">Redirecting to homepage...</p>
@@ -84,30 +83,34 @@ function VerifyClaim() {
 
   if (status === "success") {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="bg-[#1e1e1e] p-8 rounded-2xl shadow-lg border border-gray-700 text-center max-w-lg">
-          <h2 className="text-3xl font-bold text-green-400 mb-4">✅ Report ID Matched Successfully</h2>
-          <p className="mb-2">Your claim has been verified. Please wait for further communication from DMRC authorities.</p>
-        </div>
+      <div className="text-center text-white bg-[#1e1e1e] p-10 rounded-2xl max-w-xl mx-auto mt-10">
+        <h2 className="text-3xl font-bold mb-4 text-green-400">
+          ✅ Report ID Matched Successfully
+        </h2>
+        <p className="mb-2">
+          Your claim has been verified. Please wait for further communication from DMRC authorities.
+        </p>
       </div>
     );
   }
 
   if (status === "failure") {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="bg-[#1e1e1e] p-8 rounded-2xl shadow-lg border border-gray-700 text-center max-w-lg">
-          <h2 className="text-3xl font-bold text-red-400 mb-4">❌ Verification Failed</h2>
-          <p>No matching report found. Please check your entered details and try again.</p>
-        </div>
+      <div className="text-center text-white bg-[#1e1e1e] p-10 rounded-2xl max-w-xl mx-auto mt-10">
+        <h2 className="text-3xl font-bold mb-4 text-red-400">
+          ❌ Verification Failed
+        </h2>
+        <p>No matching report found. Please check your entered details and try again.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-blue-50 flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-xl bg-[#1e1e1e] p-8 rounded-2xl shadow-lg border border-gray-700">
-        <h2 className="text-3xl font-bold mb-6 text-center">Verification & Claim Process</h2>
+    <div className="min-h-screen bg-[#1e1e1e] text-white py-10 px-4 space-y-12">
+      <div className="bg-[#2a2a2a] rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold mb-6 text-center">
+          Verification & Claim Process
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm mb-1">Enter Report ID</label>
@@ -117,7 +120,7 @@ function VerifyClaim() {
               value={form.reportId}
               onChange={handleChange}
               required
-              className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
               placeholder="Enter your report ID"
             />
           </div>
@@ -130,7 +133,7 @@ function VerifyClaim() {
               value={form.fullName}
               onChange={handleChange}
               required
-              className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
               placeholder="Enter your full name"
             />
           </div>
@@ -143,44 +146,48 @@ function VerifyClaim() {
               value={form.mobile}
               onChange={handleChange}
               required
-              className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
               placeholder="Enter mobile number"
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Metro Card / QR Code</label>
+            <label className="block text-sm mb-1">
+              Metro Card / QR Code Number
+            </label>
             <input
               type="text"
               name="metroCardNo"
               value={form.metroCardNo}
               onChange={handleChange}
               required
-              className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
               placeholder="Enter metro card number or QR code"
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Upload Item Proof/Report Proof</label>
+            <label className="block text-sm mb-1">
+              Upload Item Proof / ID Proof
+            </label>
             <input
               type="file"
               name="idProof"
               accept=".pdf, image/*"
               onChange={handleChange}
               required
-              className="w-full text-sm bg-gray-800 border border-gray-600 rounded p-2"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Additional Notes</label>
+            <label className="block text-sm mb-1">Additional Notes or Any Feedbacks</label>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
               rows="4"
-              className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
               placeholder="Any additional info"
             ></textarea>
           </div>
@@ -194,6 +201,9 @@ function VerifyClaim() {
           </button>
         </form>
       </div>
+
+      {/* ✅ Matching Feature Section */}
+      <FeatureSection />
     </div>
   );
 }

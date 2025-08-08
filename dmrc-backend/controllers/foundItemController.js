@@ -5,19 +5,21 @@ const { v4: uuidv4 } = require("uuid");
 exports.createFoundItem = async (req, res) => {
   try {
     const {
+      fullName,
+      contactNumber,
       itemDescription,
       station,
+      place,
       date,
       metroCardOrQR,
-      place,
     } = req.body;
 
     const reportId = "FOUND-" + uuidv4().slice(0, 8).toUpperCase();
-
-    // ✅ Save file to 'image' field as defined in schema
     const image = req.file ? req.file.path : "";
 
     const item = new FoundItem({
+      fullName,
+      contactNumber,
       itemDescription,
       station,
       place,
@@ -40,7 +42,7 @@ exports.createFoundItem = async (req, res) => {
   }
 };
 
-// ✅ GET All Found Items (for admin panel)
+// GET All Found Items (for admin panel)
 exports.getAllFoundItems = async (req, res) => {
   try {
     const items = await FoundItem.find().sort({ date: -1 });

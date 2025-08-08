@@ -126,7 +126,7 @@ function FoundForm() {
 
         <div>
           <label className="block text-sm mb-1">
-            Metro Card Number or QR Code
+            Metro Card Number(Engraved ID)
           </label>
           <input
             type="text"

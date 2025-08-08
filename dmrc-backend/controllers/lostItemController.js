@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require("uuid");
 exports.createLostItem = async (req, res) => {
   try {
     const {
+      fullName,
+      contactNumber,
       itemDescription,
       station,
       date,
@@ -12,11 +14,11 @@ exports.createLostItem = async (req, res) => {
     } = req.body;
 
     const reportId = "LOST-" + uuidv4().slice(0, 8).toUpperCase();
-
-    // ✅ Correct field name is 'image' as per schema
     const image = req.file ? req.file.path : "";
 
     const item = new LostItem({
+      fullName,
+      contactNumber,
       itemDescription,
       station,
       date: date || new Date(),
