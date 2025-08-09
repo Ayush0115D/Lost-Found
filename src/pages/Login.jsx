@@ -1,20 +1,23 @@
-// ===== 3. UPDATED Login.jsx =====
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import metroImage from "../assets/metro.jpg";
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 function Login() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("user");
 
+  // User states
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userErrors, setUserErrors] = useState({});
   const [userLoading, setUserLoading] = useState(false);
   const [userServerError, setUserServerError] = useState("");
 
+  // Admin states
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [adminErrors, setAdminErrors] = useState({});
@@ -36,25 +39,24 @@ function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // User Login Handler - hits /api/auth/login
   const handleUserSubmit = async (e) => {
     e.preventDefault();
     if (!validate(userEmail, userPassword, setUserErrors)) return;
+
     setUserLoading(true);
     setUserServerError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`${API_BASE_URL}/api/auth/login`, {
         email: userEmail,
         password: userPassword,
       });
-      
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       localStorage.setItem("userEmail", res.data.user.email);
       localStorage.setItem("userRole", res.data.role);
-      
-      // User always goes to homepage
+
       navigate("/");
     } catch (err) {
       setUserServerError(err.response?.data?.message || "Login failed.");
@@ -63,25 +65,24 @@ function Login() {
     }
   };
 
-  // Admin Login Handler - hits /api/auth/admin-login
   const handleAdminSubmit = async (e) => {
     e.preventDefault();
     if (!validate(adminEmail, adminPassword, setAdminErrors)) return;
+
     setAdminLoading(true);
     setAdminServerError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/admin-login", {
+      const res = await axios.post(`${API_BASE_URL}/api/auth/admin-login`, {
         email: adminEmail,
         password: adminPassword,
       });
-      
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       localStorage.setItem("userEmail", res.data.user.email);
       localStorage.setItem("userRole", res.data.role);
-      
-      // Admin goes directly to admin panel
+
       navigate("/admin");
     } catch (err) {
       setAdminServerError(err.response?.data?.message || "Admin login failed.");
@@ -100,7 +101,7 @@ function Login() {
       }}
     >
       <div className="max-w-md w-full bg-black/40 backdrop-blur-md rounded-2xl p-6 shadow-lg">
-        {/* Sliding Tabs */}
+        {/* Tabs */}
         <div className="relative flex justify-center mb-6 bg-gray-800 rounded-full p-1">
           <button
             type="button"
@@ -201,6 +202,7 @@ function Login() {
             className="flex flex-col gap-4"
             id="admin-login-form"
           >
+            {/* Invisible inputs to trick password managers */}
             <input
               type="text"
               name="fakeusernameremembered"
