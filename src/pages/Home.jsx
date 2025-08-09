@@ -8,6 +8,7 @@ import FoundItemCard from "../components/FoundItemCard";
 import VerificationCard from "../components/VerificationCard";
 import axios from "axios";
 
+
 function Home() {
   const [lostItems, setLostItems] = useState([]);
   const [foundItems, setFoundItems] = useState([]);
