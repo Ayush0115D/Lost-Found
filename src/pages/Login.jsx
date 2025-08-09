@@ -1,26 +1,32 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+// ===== 3. UPDATED Login.jsx =====
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import metroImage from "../assets/metro.jpg";
 
 function Login() {
   const navigate = useNavigate();
-  const emailRef = useRef(null);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
+  const [activeTab, setActiveTab] = useState("user");
+
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [userErrors, setUserErrors] = useState({});
+  const [userLoading, setUserLoading] = useState(false);
+  const [userServerError, setUserServerError] = useState("");
+
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminErrors, setAdminErrors] = useState({});
+  const [adminLoading, setAdminLoading] = useState(false);
+  const [adminServerError, setAdminServerError] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
     if (localStorage.getItem("token")) navigate("/");
-    emailRef.current?.focus();
   }, [navigate]);
 
-  const validate = () => {
+  const validate = (email, password, setErrors) => {
     const newErrors = {};
     if (!email.trim()) newErrors.email = "Email is required.";
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email.";
@@ -30,102 +36,239 @@ function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  // User Login Handler - hits /api/auth/login
+  const handleUserSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
-    setLoading(true);
-    setServerError("");
+    if (!validate(userEmail, userPassword, setUserErrors)) return;
+    setUserLoading(true);
+    setUserServerError("");
 
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
+        email: userEmail,
+        password: userPassword,
       });
+      
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      localStorage.setItem("userEmail", res.data.user.email); //  For admin access check
+      localStorage.setItem("userEmail", res.data.user.email);
+      localStorage.setItem("userRole", res.data.role);
+      
+      // User always goes to homepage
       navigate("/");
     } catch (err) {
-      setServerError(err.response?.data?.message || "Login failed.");
+      setUserServerError(err.response?.data?.message || "Login failed.");
     } finally {
-      setLoading(false);
+      setUserLoading(false);
+    }
+  };
+
+  // Admin Login Handler - hits /api/auth/admin-login
+  const handleAdminSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate(adminEmail, adminPassword, setAdminErrors)) return;
+    setAdminLoading(true);
+    setAdminServerError("");
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/admin-login", {
+        email: adminEmail,
+        password: adminPassword,
+      });
+      
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("userEmail", res.data.user.email);
+      localStorage.setItem("userRole", res.data.role);
+      
+      // Admin goes directly to admin panel
+      navigate("/admin");
+    } catch (err) {
+      setAdminServerError(err.response?.data?.message || "Admin login failed.");
+    } finally {
+      setAdminLoading(false);
     }
   };
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      className="min-h-screen flex items-center justify-center px-4 bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage: `url(${metroImage})`,
-        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        backgroundColor: "rgba(0, 0, 0, 0.65)",
         backgroundBlendMode: "overlay",
       }}
     >
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md p-8 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-lg shadow-[0_0_30px_rgba(0,0,0,0.3)]"
-      >
-        <h2 className="text-3xl font-bold text-center mb-6 text-white drop-shadow-md">
-          Login to Your Account
-        </h2>
+      <div className="max-w-md w-full bg-black/40 backdrop-blur-md rounded-2xl p-6 shadow-lg">
+        {/* Sliding Tabs */}
+        <div className="relative flex justify-center mb-6 bg-gray-800 rounded-full p-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab("user")}
+            className={`relative z-10 flex-1 py-2 text-center rounded-full font-semibold transition-colors ${
+              activeTab === "user" ? "text-white" : "text-gray-400"
+            }`}
+          >
+            User Login
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("admin")}
+            className={`relative z-10 flex-1 py-2 text-center rounded-full font-semibold transition-colors ${
+              activeTab === "admin" ? "text-white" : "text-gray-400"
+            }`}
+          >
+            Admin Login
+          </button>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+          {/* Sliding highlight */}
+          <span
+            className={`absolute top-1 left-1 bottom-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full transition-all duration-300 ease-in-out ${
+              activeTab === "user" ? "w-1/2 left-1" : "w-1/2 left-1/2"
+            }`}
+            style={{ willChange: "left, width" }}
+          />
+        </div>
+
+        {/* User Login Form */}
+        {activeTab === "user" && (
+          <form
+            onSubmit={handleUserSubmit}
+            autoComplete="on"
+            className="flex flex-col gap-4"
+            id="user-login-form"
+          >
             <input
-              ref={emailRef}
               type="email"
+              name="user-email"
+              autoComplete="username"
               placeholder="Email"
-              className={`w-full px-4 py-3 text-white placeholder-white/70 bg-white/10 border ${
-                errors.email ? "border-red-500" : "border-white/20"
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full px-5 py-3 rounded-md text-white placeholder-gray-300 border ${
+                userErrors.email ? "border-red-500" : "border-gray-400"
+              } focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent`}
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
             />
-            {errors.email && (
-              <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+            {userErrors.email && (
+              <p className="text-red-400 text-sm">{userErrors.email}</p>
             )}
-          </div>
 
-          <div>
             <input
               type="password"
+              name="user-password"
+              autoComplete="current-password"
               placeholder="Password"
-              className={`w-full px-4 py-3 text-white placeholder-white/70 bg-white/10 border ${
-                errors.password ? "border-red-500" : "border-white/20"
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              className={`w-full px-5 py-3 rounded-md text-white placeholder-gray-300 border ${
+                userErrors.password ? "border-red-500" : "border-gray-400"
+              } focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent`}
+              value={userPassword}
+              onChange={(e) => setUserPassword(e.target.value)}
             />
-            {errors.password && (
-              <p className="text-red-400 text-sm mt-1">{errors.password}</p>
+            {userErrors.password && (
+              <p className="text-red-400 text-sm">{userErrors.password}</p>
             )}
-          </div>
 
-          {serverError && (
-            <p className="text-red-400 text-sm text-center">{serverError}</p>
-          )}
+            {userServerError && (
+              <p className="text-red-400 text-center">{userServerError}</p>
+            )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-600 transition duration-300 shadow-md disabled:opacity-50"
+            <button
+              type="submit"
+              disabled={userLoading}
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-md py-3 hover:from-blue-700 hover:to-cyan-600 transition disabled:opacity-60"
+            >
+              {userLoading ? "Logging in..." : "Login"}
+            </button>
+
+            <p className="text-center text-white/80 text-sm mt-4">
+              Don't have an account?{" "}
+              <button
+                type="button"
+                onClick={() => navigate("/register")}
+                className="text-cyan-400 hover:underline"
+              >
+                Register
+              </button>
+            </p>
+          </form>
+        )}
+
+        {/* Admin Login Form */}
+        {activeTab === "admin" && (
+          <form
+            onSubmit={handleAdminSubmit}
+            autoComplete="off"
+            className="flex flex-col gap-4"
+            id="admin-login-form"
           >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
+            <input
+              type="text"
+              name="fakeusernameremembered"
+              style={{ display: "none" }}
+              autoComplete="username"
+            />
+            <input
+              type="password"
+              name="fakepasswordremembered"
+              style={{ display: "none" }}
+              autoComplete="current-password"
+            />
 
-        <p className="mt-4 text-sm text-center text-white/80">
-          Don’t have an account?{" "}
-          <button
-            onClick={() => navigate("/register")}
-            className="text-cyan-400 hover:underline transition"
-          >
-            Register
-          </button>
-        </p>
-      </motion.div>
+            <input
+              type="email"
+              name="admin-email"
+              autoComplete="off"
+              placeholder="Admin Email"
+              className={`w-full px-5 py-3 rounded-md text-white placeholder-gray-300 border ${
+                adminErrors.email ? "border-red-500" : "border-gray-400"
+              } focus:outline-none focus:ring-2 focus:ring-red-500 bg-transparent`}
+              value={adminEmail}
+              onChange={(e) => setAdminEmail(e.target.value)}
+            />
+            {adminErrors.email && (
+              <p className="text-red-400 text-sm">{adminErrors.email}</p>
+            )}
+
+            <input
+              type="password"
+              name="admin-password"
+              autoComplete="new-password"
+              placeholder="Password"
+              className={`w-full px-5 py-3 rounded-md text-white placeholder-gray-300 border ${
+                adminErrors.password ? "border-red-500" : "border-gray-400"
+              } focus:outline-none focus:ring-2 focus:ring-red-500 bg-transparent`}
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+            />
+            {adminErrors.password && (
+              <p className="text-red-400 text-sm">{adminErrors.password}</p>
+            )}
+
+            {adminServerError && (
+              <p className="text-red-400 text-center">{adminServerError}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={adminLoading}
+              className="w-full bg-gradient-to-r from-red-600 to-pink-500 text-white font-semibold rounded-md py-3 hover:from-red-700 hover:to-pink-600 transition disabled:opacity-60"
+            >
+              {adminLoading ? "Logging in..." : "Admin Login"}
+            </button>
+
+            <p className="text-center text-white/80 text-sm mt-4">
+              Don't have an account?{" "}
+              <button
+                type="button"
+                onClick={() => navigate("/register")}
+                className="text-pink-400 hover:underline"
+              >
+                Register
+              </button>
+            </p>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
