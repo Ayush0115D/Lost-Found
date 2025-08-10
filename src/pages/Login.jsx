@@ -1,4 +1,4 @@
-// ===== 3. UPDATED Login.jsx =====
+// ===== UPDATED Login.jsx =====
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -36,7 +36,7 @@ function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // User Login Handler - hits /api/auth/login
+  // User Login Handler
   const handleUserSubmit = async (e) => {
     e.preventDefault();
     if (!validate(userEmail, userPassword, setUserErrors)) return;
@@ -44,17 +44,16 @@ function Login() {
     setUserServerError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`/api/auth/login`, {
         email: userEmail,
         password: userPassword,
       });
-      
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       localStorage.setItem("userEmail", res.data.user.email);
       localStorage.setItem("userRole", res.data.role);
-      
-      // User always goes to homepage
+
       navigate("/");
     } catch (err) {
       setUserServerError(err.response?.data?.message || "Login failed.");
@@ -63,7 +62,7 @@ function Login() {
     }
   };
 
-  // Admin Login Handler - hits /api/auth/admin-login
+  // Admin Login Handler
   const handleAdminSubmit = async (e) => {
     e.preventDefault();
     if (!validate(adminEmail, adminPassword, setAdminErrors)) return;
@@ -71,17 +70,16 @@ function Login() {
     setAdminServerError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/admin-login", {
+      const res = await axios.post(`/api/auth/admin-login`, {
         email: adminEmail,
         password: adminPassword,
       });
-      
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       localStorage.setItem("userEmail", res.data.user.email);
       localStorage.setItem("userRole", res.data.role);
-      
-      // Admin goes directly to admin panel
+
       navigate("/admin");
     } catch (err) {
       setAdminServerError(err.response?.data?.message || "Admin login failed.");

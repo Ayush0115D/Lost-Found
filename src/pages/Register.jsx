@@ -4,6 +4,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import metroImage from "../assets/metro.jpg";
 
+// ✅ Use environment variable for API base URL
+const API_BASE_URL =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:5000"
+    : window.location.origin; // same domain in production
+
 function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -25,8 +31,10 @@ function Register() {
     const newErrors = {};
     if (!form.fullName.trim()) newErrors.fullName = "Full name is required.";
     if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = "Invalid email.";
-    if (!form.password || form.password.length < 6) newErrors.password = "Min 6 characters.";
-    if (form.password !== form.confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
+    if (!form.password || form.password.length < 6)
+      newErrors.password = "Min 6 characters.";
+    if (form.password !== form.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -42,7 +50,7 @@ function Register() {
     setServerError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
+      const res = await axios.post(`${API_BASE_URL}/api/auth/register`, {
         fullName: form.fullName,
         email: form.email,
         password: form.password,
@@ -93,7 +101,9 @@ function Register() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 text-white bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
-              {errors[field] && <p className="text-red-400 text-sm">{errors[field]}</p>}
+              {errors[field] && (
+                <p className="text-red-400 text-sm">{errors[field]}</p>
+              )}
             </div>
           ))}
 
