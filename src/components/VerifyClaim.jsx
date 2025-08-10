@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import FeatureSection from "./FeatureSection"; // ✅ Import your feature card section
+import FeatureSection from "./FeatureSection";
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function VerifyClaim() {
   const [form, setForm] = useState({
     reportId: "",
     fullName: "",
-    mobile: "",
-    metroCardNo: "",
+    contactNumber: "",
+    metroCardOrQR: "",
     idProof: null,
     notes: "",
   });
 
   const [unauthorized, setUnauthorized] = useState(false);
-  const [status, setStatus] = useState(""); // "success" | "failure"
+  const [status, setStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -22,9 +24,7 @@ function VerifyClaim() {
     const token = localStorage.getItem("token");
     if (!token) {
       setUnauthorized(true);
-      setTimeout(() => {
-        navigate("/");
-      }, 2500);
+      setTimeout(() => navigate("/"), 2500);
     }
   }, [navigate]);
 
@@ -32,7 +32,7 @@ function VerifyClaim() {
     const { name, value, files } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: files ? files[0] : value,
+      [name]: files ? files[0] : value.trimStart(),
     }));
   };
 
@@ -42,27 +42,29 @@ function VerifyClaim() {
     setStatus("");
 
     try {
-      const verifyRes = await axios.post("/api/verify-claim", {
-        reportId: form.reportId,
-        fullName: form.fullName,
-        mobileNumber: form.mobile,
+      const formData = new FormData();
+      formData.append("reportId", form.reportId.trim());
+      formData.append("fullName", form.fullName.trim());
+      formData.append("contactNumber", form.contactNumber.trim());
+      formData.append("metroCardOrQR", form.metroCardOrQR.trim());
+      formData.append("notes", form.notes.trim());
+      formData.append("idProof", form.idProof);
+
+      const res = await axios.post(`${API_BASE_URL}/api/verify`, formData, {
+        withCredentials: true,
       });
 
-      if (verifyRes.data?.match === true) {
-        const formData = new FormData();
-        formData.append("fullName", form.fullName);
-        formData.append("mobileNumber", form.mobile);
-        formData.append("metroCardOrQR", form.metroCardNo);
-        formData.append("notes", form.notes);
-        formData.append("idProof", form.idProof);
-
-        await axios.post("/api/submit-verification", formData);
+      if (res.data?.success) {
         setStatus("success");
+        setTimeout(() => navigate("/"), 9000); // Redirect to homepage after 9s
       } else {
         setStatus("failure");
       }
     } catch (err) {
-      console.error("Error in verification flow:", err.message);
+      console.error(
+        "Error in verification flow:",
+        err.response?.data || err.message
+      );
       setStatus("failure");
     } finally {
       setIsSubmitting(false);
@@ -72,7 +74,7 @@ function VerifyClaim() {
   if (unauthorized) {
     return (
       <div className="min-h-screen bg-[#1e1e1e] text-white flex items-center justify-center">
-        <div className="text-center p-8 bg-[#2a2a2a] rounded-xl border border-gray-700">
+        <div className="text-center p-8 bg-[#2a2a2a] rounded-xl border border-gray-700 animate-fadeIn">
           <h2 className="text-2xl font-bold text-red-400 mb-4">Unauthorized</h2>
           <p>You are not authorized to access this page.</p>
           <p className="text-sm mt-2">Redirecting to homepage...</p>
@@ -83,31 +85,51 @@ function VerifyClaim() {
 
   if (status === "success") {
     return (
-      <div className="text-center text-white bg-[#1e1e1e] p-10 rounded-2xl max-w-xl mx-auto mt-10">
-        <h2 className="text-3xl font-bold mb-4 text-green-400">
-          ✅ Report ID Matched Successfully
-        </h2>
-        <p className="mb-2">
-          Your claim has been verified. Please wait for further communication from DMRC authorities.
-        </p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 to-gray-900 text-white">
+        <div className="bg-[#0f2f1c] p-10 rounded-3xl shadow-2xl text-center max-w-lg w-full animate-fadeIn border border-green-600">
+          <div className="text-green-400 text-7xl mb-4 animate-bounce">✅</div>
+          <h2 className="text-3xl font-extrabold mb-4 text-green-300">
+            Verification Successful!
+          </h2>
+          <p className="text-lg mb-6 text-gray-200">
+            Your details matched with the reported item.
+            <br />
+            Redirecting to homepage in <span className="font-bold">9 seconds</span>...
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md"
+          >
+            Go to Homepage Now
+          </button>
+        </div>
       </div>
     );
   }
 
   if (status === "failure") {
     return (
-      <div className="text-center text-white bg-[#1e1e1e] p-10 rounded-2xl max-w-xl mx-auto mt-10">
-        <h2 className="text-3xl font-bold mb-4 text-red-400">
-          ❌ Verification Failed
-        </h2>
-        <p>No matching report found. Please check your entered details and try again.</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#1e1e1e] text-white">
+        <div className="bg-[#2a2a2a] p-10 rounded-3xl shadow-2xl text-center max-w-lg w-full animate-fadeIn border border-red-600">
+          <div className="text-red-400 text-7xl mb-4">❌</div>
+          <h2 className="text-3xl font-bold mb-4">Verification Failed</h2>
+          <p className="text-lg mb-6">
+            No matching report found. Please check your entered details.
+          </p>
+          <button
+            onClick={() => setStatus("")}
+            className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition shadow-md"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#1e1e1e] text-white py-10 px-4 space-y-12">
-      <div className="bg-[#2a2a2a] rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto">
+      <div className="bg-[#2a2a2a] rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto animate-fadeIn">
         <h2 className="text-3xl font-bold mb-6 text-center">
           Verification & Claim Process
         </h2>
@@ -121,7 +143,6 @@ function VerifyClaim() {
               onChange={handleChange}
               required
               className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
-              placeholder="Enter your report ID"
             />
           </div>
 
@@ -134,7 +155,6 @@ function VerifyClaim() {
               onChange={handleChange}
               required
               className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
-              placeholder="Enter your full name"
             />
           </div>
 
@@ -142,12 +162,11 @@ function VerifyClaim() {
             <label className="block text-sm mb-1">Mobile Number</label>
             <input
               type="tel"
-              name="mobile"
-              value={form.mobile}
+              name="contactNumber"
+              value={form.contactNumber}
               onChange={handleChange}
               required
               className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
-              placeholder="Enter mobile number"
             />
           </div>
 
@@ -157,12 +176,11 @@ function VerifyClaim() {
             </label>
             <input
               type="text"
-              name="metroCardNo"
-              value={form.metroCardNo}
+              name="metroCardOrQR"
+              value={form.metroCardOrQR}
               onChange={handleChange}
               required
               className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
-              placeholder="Enter metro card number or QR code"
             />
           </div>
 
@@ -181,14 +199,13 @@ function VerifyClaim() {
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Additional Notes or Any Feedbacks</label>
+            <label className="block text-sm mb-1">Additional Notes</label>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
               rows="4"
               className="w-full p-3 bg-gray-800 border border-gray-700 rounded text-white"
-              placeholder="Any additional info"
             ></textarea>
           </div>
 
@@ -202,7 +219,6 @@ function VerifyClaim() {
         </form>
       </div>
 
-      {/* ✅ Matching Feature Section */}
       <FeatureSection />
     </div>
   );

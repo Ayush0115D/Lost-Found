@@ -1,6 +1,8 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const path = require("path");
+const fs = require("fs");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -15,17 +17,24 @@ connectDB();
 
 const app = express();
 
+// ✅ Ensure upload directories exist
+const uploadDirs = ["uploads", "uploads/idproofs"];
+uploadDirs.forEach((dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
+
 // ✅ CORS setup for local + production
 const allowedOrigins = [
-  "http://localhost:5173", // Vite dev
-  "https://lost-found-dmrc.vercel.app/login" // Replace with your actual Vercel URL
+  "http://localhost:5173", // Dev
+  "https://lost-found-dmrc.vercel.app" // Production root
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // allow mobile apps, curl, etc.
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
@@ -37,9 +46,9 @@ app.use(
 );
 
 app.use(express.json());
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
+// ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/lost-items", lostRoutes);
 app.use("/api/found-items", foundRoutes);

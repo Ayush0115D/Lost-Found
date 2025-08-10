@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const verificationSchema = new mongoose.Schema(
   {
     fullName: String,
-    mobileNumber: String,
+    contactNumber: String,
     metroCardOrQR: String,
     idProof: String,
     notes: String,

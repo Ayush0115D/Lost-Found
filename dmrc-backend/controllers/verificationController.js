@@ -1,31 +1,40 @@
+// controllers/verificationController.js
 const Verification = require("../models/Verification");
 const LostItem = require("../models/LostItem");
 const FoundItem = require("../models/FoundItem");
 const { v4: uuidv4 } = require("uuid");
-
+/**
+ * Submit verification request
+ * Matches a user-submitted verification against lost/found item reports.
+ */
 exports.submitVerification = async (req, res) => {
   try {
     const {
       reportId,
       fullName,
-      mobileNumber,
+      contactNumber,
       metroCardOrQR,
       notes
     } = req.body;
 
+    // Uploaded ID proof file name
     const idProof = req.file ? req.file.filename : null;
 
-    if (!reportId || !fullName || !mobileNumber || !metroCardOrQR || !idProof) {
+    // Validate required fields
+    if (!reportId || !fullName || !contactNumber || !metroCardOrQR || !idProof) {
       return res.status(400).json({ error: "Missing required fields" });
     }
+
+    console.log("---- DEBUG START ----");
+    console.log("Request body:", req.body);
 
     // Generate short verification ID
     const verificationId = "VERI-" + uuidv4().slice(0, 8).toUpperCase();
 
-    // Save verification submission
+    // Save verification submission in DB
     const verification = new Verification({
       fullName,
-      mobileNumber,
+      contactNumber,
       metroCardOrQR,
       notes,
       idProof,
@@ -33,10 +42,27 @@ exports.submitVerification = async (req, res) => {
     });
     await verification.save();
 
-    // Try matching the report in Lost or Found items
-    const matchedItem =
-      (await LostItem.findOne({ reportId, fullName, contactNumber: mobileNumber, metroCardOrQR })) ||
-      (await FoundItem.findOne({ reportId, fullName, contactNumber: mobileNumber, metroCardOrQR }));
+    // Flexible matching query (case-insensitive for names & card/QR)
+    const matchQuery = {
+      reportId: reportId.trim(),
+      contactNumber: contactNumber.trim(),
+      fullName: { $regex: new RegExp(`^${fullName.trim()}$`, "i") },
+      metroCardOrQR: { $regex: new RegExp(`^${metroCardOrQR.trim()}$`, "i") },
+    };
+
+    console.log("Match query:", matchQuery);
+
+    // Search in LostItem and FoundItem collections
+    const lostMatch = await LostItem.findOne(matchQuery);
+    console.log("LostItem found:", lostMatch);
+
+    const foundMatch = await FoundItem.findOne(matchQuery);
+    console.log("FoundItem found:", foundMatch);
+
+    console.log("---- DEBUG END ----");
+
+    // Determine if match found
+    const matchedItem = lostMatch || foundMatch;
 
     if (matchedItem) {
       return res.status(200).json({
