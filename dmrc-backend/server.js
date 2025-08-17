@@ -56,5 +56,9 @@ app.use("/api/home", homeRoutes);
 app.use("/api/verify", verificationRoutes);
 app.use("/api/admin", adminRoutes);
 
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running!");
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
